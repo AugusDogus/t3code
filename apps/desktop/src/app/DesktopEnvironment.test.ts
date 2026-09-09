@@ -14,9 +14,9 @@ const defaultInput = {
   platform: "darwin",
   processArch: "arm64",
   appVersion: "0.0.22",
-  appPath: "/Applications/T3 Code.app/Contents/Resources/app.asar",
+  appPath: "/Applications/Backplane.app/Contents/Resources/app.asar",
   isPackaged: false,
-  resourcesPath: "/Applications/T3 Code.app/Contents/Resources",
+  resourcesPath: "/Applications/Backplane.app/Contents/Resources",
   runningUnderArm64Translation: false,
 } satisfies DesktopEnvironment.MakeDesktopEnvironmentInput;
 
@@ -40,7 +40,7 @@ const makeEnvironment = (
   DesktopEnvironment.DesktopEnvironment.pipe(Effect.provide(makeEnvironmentLayer(overrides, env)));
 
 describe("DesktopEnvironment", () => {
-  it.effect("isolates a packaged Linux app from an inherited T3 Code home", () =>
+  it.effect("isolates a packaged Linux app from an inherited Backplane home", () =>
     Effect.gen(function* () {
       const environment = yield* makeEnvironment(
         { platform: "linux", homeDirectory: "/home/alice", isPackaged: true },

@@ -199,7 +199,7 @@ export const make = Effect.gen(function* BrowserSessionMake() {
           const userAgent = browserSession
             .getUserAgent()
             .replace(/Electron\/[\d.]+ /, "")
-            .replace(/\s*t3code\/[\d.]+/, "");
+            .replace(/\s*(?:backplane|t3code)\/[\w.-]+/gi, "");
           browserSession.setUserAgent(userAgent);
           browserSession.setPermissionRequestHandler((_webContents, permission, callback) => {
             callback(ALLOWED_PREVIEW_PERMISSIONS.has(permission));

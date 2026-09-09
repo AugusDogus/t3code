@@ -1,7 +1,11 @@
 # Remote access
 
-Connect a phone, browser, or another desktop app to T3 Code running on a different
+Connect a phone, browser, or another desktop app to Backplane running on a different
 machine. That machine must stay running and reachable while you work.
+
+Desktop hosts run Backplane. The `npx t3` commands below install or manage
+upstream T3 Code servers, with their own versions and data directories.
+They do not install Backplane or manage its bundled server.
 
 ## T3 Connect
 
@@ -119,7 +123,7 @@ scheme uses HTTP, so include `https://` when your server uses HTTPS.
 ## Desktop-managed SSH
 
 In the desktop app, open **Settings → Connections → Add environment**, choose
-**SSH**, and enter a host or SSH alias such as `user@example.com`. T3 Code starts
+**SSH**, and enter a host or SSH alias such as `user@example.com`. Backplane starts
 or reuses a server there and opens the port forward for you. Projects, provider
 credentials, and agent work stay on the remote machine.
 
@@ -136,7 +140,7 @@ your normal terminal. With nvm, setting a compatible default, such as
 `nvm alias default 24`, can resolve the problem.
 
 If SSH reconnecting fails after an app update, retry the launch once. Removing
-the connection stops a server that T3 Code launched; a server that was already
+the connection stops a server that Backplane launched; a server that was already
 running is left alone.
 
 For Antigravity's Google callback on a remote host, see
@@ -146,8 +150,8 @@ For Antigravity's Google callback on a remote host, see
 
 On the host, **Settings → Connections** lets authorized administrators create
 pairing links and revoke client sessions. Revoking an unused link prevents new
-pairings; revoke a device's session to remove its existing access. Command-line
-management is available through `npx t3 auth --help`.
+pairings; revoke a device's session to remove its existing access. For upstream
+T3 Code servers, command-line management is available through `npx t3 auth --help`.
 
 A session with an open connection stays listed after its access credential
 expires.
@@ -166,23 +170,23 @@ screenshots, logs, or bug reports.
 
 ## T3 Connect troubleshooting
 
-Run `t3 connect status` on the host to inspect saved authorization and link
+For an upstream T3 Code host, run `t3 connect status` to inspect saved authorization and link
 configuration. It is not a live reachability check. If the environment appears
 offline, run `t3 service status` and read the displayed log. If it disappears
 when SSH closes, see [background-service troubleshooting](./background-service.md#troubleshooting).
 
-| Error                                                     | Recovery                                                                                                                                    |
-| --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| `environment_link_limit_exceeded` or managed tunnel limit | Deregister an unused environment, then restart T3 Code on the host.                                                                         |
-| `auth_invalid` or `invalid_bearer`                        | Run `t3 connect login`. If credentials were revoked, run `t3 connect logout`, then `t3 connect` again. Restart the server after signing in. |
-| Expired or invalid link proof                             | Check the host's date and time, update T3 Code, then restart it.                                                                            |
-| HTTP 403 without a recognized error                       | Check relay access, proxies, and firewall rules. Keep any Cloudflare Ray ID for a bug report.                                               |
-| HTTP 408, 429, or 5xx                                     | Check network and relay availability. Startup retries temporary failures for up to ten minutes.                                             |
+| Error                                                     | Recovery                                                                                        |
+| --------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| `environment_link_limit_exceeded` or managed tunnel limit | Deregister an unused environment, then restart Backplane on the host.                           |
+| `auth_invalid` or `invalid_bearer`                        | Sign out of T3 Connect on the host, then sign in again and restart the host app or server.      |
+| Expired or invalid link proof                             | Check the host's date and time, update Backplane, then restart it.                              |
+| HTTP 403 without a recognized error                       | Check relay access, proxies, and firewall rules. Keep any Cloudflare Ray ID for a bug report.   |
+| HTTP 408, 429, or 5xx                                     | Check network and relay availability. Startup retries temporary failures for up to ten minutes. |
 
-After fixing a permanent rejection, restart the host's server. On Linux, use
-`systemctl --user restart t3code.service` for the background service. For a
-foreground server, stop it and run `t3 serve` again with your usual options.
+After fixing a permanent rejection, restart Backplane on the host. For an upstream
+T3 Code background service on Linux, use `systemctl --user restart t3code.service`.
+For an upstream foreground server, stop it and run `t3 serve` again with your usual options.
 Include the diagnostic message and trace ID when reporting a persistent failure.
 
 For a connection that still fails after linking, check the date and time on both
-devices. For server version warnings, follow [Updating T3 Code](./updating.md).
+devices. For server version warnings, follow [Updating Backplane](./updating.md).

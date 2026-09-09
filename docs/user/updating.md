@@ -1,4 +1,8 @@
-# Updating T3 Code
+# Updating Backplane
+
+Download a newer AppImage from [Backplane Releases](https://github.com/i2cjak/Backplane/releases),
+close Backplane, and replace the previous AppImage. Threads and settings stay in
+`~/.backplane/userdata`, or `userdata` under your configured `BACKPLANE_HOME`.
 
 The app you use and the server running your agents can be on different machines.
 When a server is behind your web or desktop app, an update notice appears in the
@@ -15,7 +19,7 @@ Enable it to resume supported active threads after an update, crash, or machine
 restart. Changes are saved to connected environments that support this setting;
 update older servers first. If a supported environment was offline or has a
 different value, use **Apply to all** in Settings after it connects.
-T3 Code must start again on that machine;
+The host app or server must start again on that machine;
 the setting does not enable automatic startup. Terminal commands may still be
 interrupted, and threads without saved provider resume state need a new message.
 If you previously enabled continuation for updates, enable this setting once
@@ -31,18 +35,20 @@ The offered action depends on how the server runs:
 | **Update the desktop app** | Update the desktop app on the machine running the server, then reopen it if needed.                                                                                                             |
 | **Copy update command**    | Stop the command-line server on its host and relaunch with the copied command, keeping your usual startup options.                                                                              |
 
-For a background service, run the matching version's CLI on the host:
+The `npx t3` commands manage upstream T3 Code servers, not Backplane. Backplane
+release versions do not correspond to T3 Code package versions. For an upstream
+background service, run its chosen T3 Code version on the host:
 
 ```sh
-npx t3@<client-version> service update
+npx t3@<t3-version> service update
 ```
 
-Replace `<client-version>` with the version shown in the notice. Using
-`@latest` only resolves the mismatch if your client is on that release. An older
+Replace `<t3-version>` with a published T3 Code version compatible with that
+server's clients. An older
 service launcher may require this local update before it supports remote updates
 and rollback.
 
-For a foreground server, the copied command is `npx t3@<client-version>`. Add
+For an upstream foreground server, use `npx t3@<t3-version>`. Add
 `serve` if you normally run without a browser, and preserve options such as
 `--host` or `--tailscale-serve`. See
 [background services](./background-service.md) for service management.
@@ -54,11 +60,12 @@ update can roll back to the previous version. If the update still fails:
 
 1. Retry the offered action once.
 2. Check that you updated the server's machine, not only the device you are using.
-3. For a command-line server, stop it and relaunch the exact version shown in the notice.
+3. For an upstream command-line server, stop it and relaunch a compatible T3 Code version.
 
 ## Mobile updates
 
-Install App Store or Google Play releases as usual. The mobile app can also
+Backplane mobile releases are not available yet. For the upstream T3 Code mobile app,
+install App Store or Google Play releases as usual. The mobile app can also
 download updates in the background and apply them when you next leave the app.
 It saves drafts and queued messages before restarting. If you keep the app open
 for a long time, it may ask to install immediately; choosing **Later** leaves the

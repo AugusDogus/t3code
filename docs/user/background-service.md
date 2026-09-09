@@ -1,4 +1,8 @@
-# Running T3 Code in the background
+# Upstream T3 Code background services
+
+These commands manage the upstream T3 Code CLI, not the Backplane desktop app.
+They use T3 Code's own data directory. To run Backplane as a remote host, keep
+the desktop app open and enable [network access](./remote-access.md#pair-over-a-lan-or-private-network).
 
 On Linux and macOS, T3 Code can run as a service for your user so you do not need
 to keep a terminal open.
@@ -23,7 +27,7 @@ one. An older CLI refuses to replace a newer service unless you explicitly add
 
 Updating restarts the server. Finish active work first, and wait for any remote
 update already in progress. To match a remote client's version, follow
-[Updating T3 Code](./updating.md).
+[connected server updates](./updating.md#update-a-connected-server).
 
 ## Platform support
 

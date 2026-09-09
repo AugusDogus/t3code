@@ -60,15 +60,17 @@ export function prepareBomProject(value: unknown) {
   const hasSettings = Array.isArray(settings.fields_ordered) && settings.fields_ordered.length > 0;
   const hasFormat = Object.keys(format).length > 0;
   const args: string[] = [];
-  if (hasSettings) args.push("--preset", "T3CAD saved settings");
-  if (hasFormat) args.push("--format-preset", "T3CAD saved format");
+  if (hasSettings) args.push("--preset", "Backplane saved settings");
+  if (hasFormat) args.push("--format-preset", "Backplane saved format");
   return {
     project: {
       ...project,
       schematic: {
         ...schematic,
-        ...(hasSettings ? { bom_presets: [{ ...settings, name: "T3CAD saved settings" }] } : {}),
-        ...(hasFormat ? { bom_fmt_presets: [{ ...format, name: "T3CAD saved format" }] } : {}),
+        ...(hasSettings
+          ? { bom_presets: [{ ...settings, name: "Backplane saved settings" }] }
+          : {}),
+        ...(hasFormat ? { bom_fmt_presets: [{ ...format, name: "Backplane saved format" }] } : {}),
       },
     },
     args,

@@ -37,7 +37,7 @@ it("uses the active edited settings rather than an outdated named preset", () =>
   });
   expect(prepared.project.schematic.bom_presets).toEqual([
     {
-      name: "T3CAD saved settings",
+      name: "Backplane saved settings",
       fields_ordered: fields,
       group_symbols: true,
       exclude_dnp: true,
@@ -49,9 +49,9 @@ it("uses the active edited settings rather than an outdated named preset", () =>
   expect(prepared.preset).toBe("Current saved settings");
   expect(prepared.args).toEqual([
     "--preset",
-    "T3CAD saved settings",
+    "Backplane saved settings",
     "--format-preset",
-    "T3CAD saved format",
+    "Backplane saved format",
   ]);
 });
 

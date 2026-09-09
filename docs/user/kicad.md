@@ -1,6 +1,6 @@
 # View KiCad projects
 
-T3CAD includes KiStack's nine electronics skills automatically for every project and agent provider. Ask your agent to use them for schematics, symbols, footprints, BOM review, PCB review, exports, Gerbers, panelization, or product renders. No separate skill installation is needed. Tools required by a workflow, such as KiCad or Blender, must still be installed on the connected environment.
+Backplane includes KiStack's nine electronics skills automatically for every project and agent provider. Ask your agent to use them for schematics, symbols, footprints, BOM review, PCB review, exports, Gerbers, panelization, or product renders. No separate skill installation is needed. Tools required by a workflow, such as KiCad or Blender, must still be installed on the connected environment.
 
 Open **KiCad** from a thread's right-panel add menu to inspect its PCB, schematic, Gerber layers, and 3D board using KiCAD-Prism's viewers. The panel follows the thread's workspace or worktree. It reads saved files without locking them; you can continue editing in KiCad or through your agent.
 

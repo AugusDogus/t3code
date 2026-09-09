@@ -14,7 +14,7 @@ export function makeDirectActivityPayload(
 ) {
   const running = states.filter(active).sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
   const props = {
-    title: "T3CAD",
+    title: "Backplane",
     subtitle: running.length ? "Agent work in progress" : "Agent work finished",
     activeCount: running.length,
     updatedAt: new Date(timestamp * 1000).toISOString(),

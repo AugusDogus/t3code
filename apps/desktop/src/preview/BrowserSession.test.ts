@@ -39,7 +39,10 @@ describe("BrowserSession", () => {
       const browserSession = {
         clearCache: vi.fn(() => Promise.resolve()),
         clearStorageData: vi.fn(() => Promise.resolve()),
-        getUserAgent: vi.fn(() => "Mozilla/5.0 Electron/41.5.0 t3code/0.0.27"),
+        getUserAgent: vi.fn(
+          () =>
+            "Mozilla/5.0 Chrome/141.0.0.0 Electron/41.5.0 Backplane/0.1.0-alpha.1 Safari/537.36",
+        ),
         setPermissionRequestHandler: vi.fn(),
         setPermissionCheckHandler: vi.fn(),
         setUserAgent: vi.fn(),
@@ -60,6 +63,9 @@ describe("BrowserSession", () => {
       assert.strictEqual(partition, "persist:t3code-preview-f051bb2c68cb7b2fe969");
       assert.strictEqual(first, second);
       assert.strictEqual(fromPartition.mock.calls.length, 1);
+      assert.deepEqual(sessions.get(partition)?.setUserAgent.mock.calls, [
+        ["Mozilla/5.0 Chrome/141.0.0.0 Safari/537.36"],
+      ]);
     }).pipe(Effect.provide(layer)),
   );
 
