@@ -110,7 +110,7 @@ function makeTestService(serviceStatus: BootService.BootServiceStatus) {
         return {
           nodePath: "/test/node",
           launcherPath: "/test/service-launcher.mjs",
-          baseDir: "/test/t3",
+          baseDir: "/test/backplane",
           unitPath: serviceStatus.unitPath,
           logPath: serviceStatus.logPath,
         };

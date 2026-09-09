@@ -50,7 +50,9 @@ describe("native pasted image cleanup", () => {
       ),
     ).toBe(true);
     expect(isOwnedPastedImageUri("file:///private/var/mobile/photos/id.png")).toBe(false);
-    expect(isOwnedPastedImageUri("https://example.com/t3-composer-paste/id.png")).toBe(false);
+    expect(isOwnedPastedImageUri("https://example.com/backplane-composer-paste/id.png")).toBe(
+      false,
+    );
   });
 
   it("converts owned files to data-backed previews and deletes the source", async () => {

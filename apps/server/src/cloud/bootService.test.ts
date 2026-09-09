@@ -98,11 +98,11 @@ it("appends both stdio streams to the boot service log", () => {
 
 it("escapes XML in host paths", () => {
   const plist = BootService.renderBootServicePlist(
-    { ...macPlan, baseDir: "/Users/theo/T3 & <Co>" },
+    { ...macPlan, baseDir: "/Users/theo/Backplane & <Co>" },
     { homeDir: "/Users/theo", environmentPath: "/Users/theo/Tools & <Scripts>:/usr/bin" },
   );
 
-  expect(plist).toContain("<string>/Users/theo/T3 &amp; &lt;Co&gt;</string>");
+  expect(plist).toContain("<string>/Users/theo/Backplane &amp; &lt;Co&gt;</string>");
   expect(plist).toContain("<string>/Users/theo/Tools &amp; &lt;Scripts&gt;:/usr/bin</string>");
 });
 
@@ -165,7 +165,7 @@ const makeHarness = Effect.fn("test.make_boot_service_harness")(function* (
       return {
         stdout:
           input.args[1] === "--version"
-            ? "t3 v1.2.3\n"
+            ? "backplane v1.2.3\n"
             : input.command === "loginctl" && input.args[0] === "show-user"
               ? `${control.linger}\n`
               : input.args[1] === "is-enabled"

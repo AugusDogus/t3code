@@ -48,9 +48,9 @@ const decodeJson = Schema.decodeUnknownSync(Schema.fromJsonString(Schema.Unknown
 describe("Antigravity process environment", () => {
   const profile: AntigravityProfile = {
     platform: "linux",
-    geminiHome: "/t3/userdata/providers/antigravity/profile",
-    acpDirectory: "/t3/userdata/providers/antigravity/profile/antigravity-acp",
-    tokenPath: "/t3/userdata/providers/antigravity/profile/antigravity-acp/acp_token.json",
+    geminiHome: "/backplane/userdata/providers/antigravity/profile",
+    acpDirectory: "/backplane/userdata/providers/antigravity/profile/antigravity-acp",
+    tokenPath: "/backplane/userdata/providers/antigravity/profile/antigravity-acp/acp_token.json",
     browserCommand: "managed-browser-helper",
   };
 

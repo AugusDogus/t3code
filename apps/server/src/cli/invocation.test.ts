@@ -9,7 +9,7 @@ it("formats package runner commands from their cache entry paths", () => {
       "npx @backplane/server serve",
     ],
     [
-      "C:\\Users\\theo\\AppData\\Local\\npm-cache\\_npx\\abc\\node_modules\\t3\\dist\\bin.mjs",
+      "C:\\Users\\theo\\AppData\\Local\\npm-cache\\_npx\\abc\\node_modules\\@backplane\\server\\dist\\bin.mjs",
       "npx @backplane/server serve",
     ],
     [
@@ -21,7 +21,7 @@ it("formats package runner commands from their cache entry paths", () => {
       "pnpm dlx @backplane/server serve",
     ],
     [
-      "C:\\Users\\theo\\AppData\\Local\\pnpm-cache\\dlx\\abc\\node_modules\\t3\\dist\\bin.mjs",
+      "C:\\Users\\theo\\AppData\\Local\\pnpm-cache\\dlx\\abc\\node_modules\\@backplane\\server\\dist\\bin.mjs",
       "pnpm dlx @backplane/server serve",
     ],
     [
@@ -33,7 +33,7 @@ it("formats package runner commands from their cache entry paths", () => {
       "bunx @backplane/server serve",
     ],
     [
-      "C:\\Users\\theo\\AppData\\Local\\Temp\\bunx-0-@backplane/server@latest\\node_modules\\t3\\dist\\bin.mjs",
+      "C:\\Users\\theo\\AppData\\Local\\Temp\\bunx-0-@backplane/server@latest\\node_modules\\@backplane\\server\\dist\\bin.mjs",
       "bunx @backplane/server serve",
     ],
   ] as const) {

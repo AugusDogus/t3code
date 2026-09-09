@@ -42,7 +42,7 @@ describe("owned attachment paths", () => {
     `file:///var/mobile/Containers/Data/Application/${OLD_CONTAINER}/Documents/backplane-composer-attachments/report.pdf`,
     `file:///downloads/backplane-composer-attachments/${FILE_NAME}`,
     `content://shared/backplane-composer-attachments/${FILE_NAME}`,
-    `https://example.com/t3-composer-attachments/${FILE_NAME}`,
+    `https://example.com/backplane-composer-attachments/${FILE_NAME}`,
     `file:///var/mobile/Containers/Data/Application/${OLD_CONTAINER}/Documents/backplane-composer-attachments/..%2F..%2Fsender.pdf`,
     `file:///var/mobile/Containers/Data/Application/${OLD_CONTAINER}/Documents/backplane-composer-attachments/${FILE_NAME}%2Fnested.pdf`,
   ])("does not rebase an external or escaped path: %s", (uri) => {
