@@ -1,7 +1,7 @@
 import * as NodeServices from "@effect/platform-node/NodeServices";
 import { expect, it } from "@effect/vitest";
-import { ServerSelfUpdateError, ThreadId } from "@t3tools/contracts";
-import { HostProcessExecutablePath } from "@t3tools/shared/hostProcess";
+import { ServerSelfUpdateError, ThreadId } from "@backplane/contracts";
+import { HostProcessExecutablePath } from "@backplane/shared/hostProcess";
 import * as Cause from "effect/Cause";
 import * as Deferred from "effect/Deferred";
 import * as Effect from "effect/Effect";
@@ -30,7 +30,7 @@ const makeHarness = Effect.fn("test.make_self_update_harness")(function* (
 ) {
   const fs = yield* FileSystem.FileSystem;
   const path = yield* Path.Path;
-  const baseDir = yield* fs.makeTempDirectoryScoped({ prefix: "t3-self-update-test-" });
+  const baseDir = yield* fs.makeTempDirectoryScoped({ prefix: "backplane-self-update-test-" });
   const order: string[] = [];
   const runner = ProcessRunner.ProcessRunner.of({
     run: (input) =>
@@ -39,7 +39,7 @@ const makeHarness = Effect.fn("test.make_self_update_harness")(function* (
           order.push("install");
           const prefix = input.args[input.args.indexOf("--prefix") + 1];
           if (prefix === undefined) return yield* Effect.die("missing npm prefix");
-          const entry = path.join(prefix, "node_modules", "t3", "dist", "bin.mjs");
+          const entry = path.join(prefix, "node_modules", "backplane", "dist", "bin.mjs");
           yield* fs.makeDirectory(path.dirname(entry), { recursive: true }).pipe(Effect.orDie);
           yield* fs.writeFileString(entry, "export {};\n").pipe(Effect.orDie);
           return {

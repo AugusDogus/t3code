@@ -4,7 +4,7 @@ import * as NodeFSP from "node:fs/promises";
 import * as NodeOS from "node:os";
 import * as NodePath from "node:path";
 import * as NodeUtil from "node:util";
-import type { KiCadBom } from "@t3tools/contracts";
+import type { KiCadBom } from "@backplane/contracts";
 import { discoverKiCadProject, resolveKiCadProjectFile } from "./KiCadProject.ts";
 import { resolveKiCadEnvironment, resolveKiCadExecutable } from "./KiCadExecutable.ts";
 
@@ -113,7 +113,7 @@ export function createKiCadBomCache(run = runExport) {
         const prepared = prepareBomProject(
           projectAsset ? JSON.parse(await NodeFSP.readFile(projectAsset.absolutePath, "utf8")) : {},
         );
-        const directory = await NodeFSP.mkdtemp(NodePath.join(NodeOS.tmpdir(), "t3cad-bom-"));
+        const directory = await NodeFSP.mkdtemp(NodePath.join(NodeOS.tmpdir(), "backplane-bom-"));
         try {
           // Preserve relative sheet paths and project variables without writing alongside user files.
           for (const file of manifest.files.filter((item) => item.kind === "schematic")) {
@@ -127,7 +127,7 @@ export function createKiCadBomCache(run = runExport) {
             NodePath.join(directory, projectPath),
             JSON.stringify(prepared.project),
           );
-          const output = NodePath.join(directory, "t3cad-bom.csv");
+          const output = NodePath.join(directory, "backplane-bom.csv");
           await run(
             [
               "sch",

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Backplane App Testing"
+  short_description: "Launch and retain isolated Backplane test environments"
+  default_prompt: "Use $test-backplane-app to launch an isolated Backplane environment and iteratively test it in the browser while preserving state."

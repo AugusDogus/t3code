@@ -1,10 +1,18 @@
-const DEFAULT_MARKETING_SITE_URL = "https://t3.codes";
+const BACKPLANE_LICENSE_URL = "https://github.com/i2cjak/Backplane/blob/t3cad/LICENSE";
+const BACKPLANE_SECURITY_URL = "https://github.com/i2cjak/Backplane/security/policy";
+
+const DEFAULT_LEGAL_DOCUMENT_URLS = {
+  privacy: BACKPLANE_SECURITY_URL,
+  security: BACKPLANE_SECURITY_URL,
+  terms: BACKPLANE_LICENSE_URL,
+  legal: BACKPLANE_LICENSE_URL,
+} as const;
 
 function resolveMarketingSiteUrl(override: string | undefined): URL {
   try {
-    const url = new URL(override?.trim() || DEFAULT_MARKETING_SITE_URL);
+    const url = new URL(override?.trim() || BACKPLANE_LICENSE_URL);
     if (url.protocol !== "https:" && url.protocol !== "http:") {
-      return new URL(DEFAULT_MARKETING_SITE_URL);
+      return new URL(BACKPLANE_LICENSE_URL);
     }
 
     url.search = "";
@@ -12,13 +20,27 @@ function resolveMarketingSiteUrl(override: string | undefined): URL {
     url.pathname = `${url.pathname.replace(/\/+$/, "")}/`;
     return url;
   } catch {
-    return new URL(DEFAULT_MARKETING_SITE_URL);
+    return new URL(BACKPLANE_LICENSE_URL);
   }
 }
 
-const MARKETING_SITE_URL = resolveMarketingSiteUrl(process.env.EXPO_PUBLIC_MARKETING_SITE_URL);
+const configuredMarketingSiteUrl = process.env.EXPO_PUBLIC_MARKETING_SITE_URL?.trim();
+const MARKETING_SITE_URL = configuredMarketingSiteUrl
+  ? resolveMarketingSiteUrl(configuredMarketingSiteUrl)
+  : null;
 
 function marketingSiteDocumentUrl(path: string): string {
+  if (MARKETING_SITE_URL === null) {
+    const key =
+      path === "privacy-policy"
+        ? "privacy"
+        : path === "security-policy"
+          ? "security"
+          : path === "terms-of-service"
+            ? "terms"
+            : "legal";
+    return DEFAULT_LEGAL_DOCUMENT_URLS[key];
+  }
   return new URL(path, MARKETING_SITE_URL).toString();
 }
 

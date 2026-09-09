@@ -56,7 +56,7 @@ it("uses the active edited settings rather than an outdated named preset", () =>
 });
 
 it("shares exports per revision, preserves source settings, and removes temporary files", async () => {
-  const root = await NodeFSP.mkdtemp(NodePath.join(NodeOS.tmpdir(), "t3cad-bom-test-"));
+  const root = await NodeFSP.mkdtemp(NodePath.join(NodeOS.tmpdir(), "backplane-bom-test-"));
   const original =
     '{"schematic":{"bom_settings":{"fields_ordered":[{"name":"Reference","show":true}]}}}';
   let runs = 0;

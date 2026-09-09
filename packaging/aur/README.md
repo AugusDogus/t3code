@@ -1,8 +1,9 @@
 # AUR packaging
 
-This directory maintains the [`t3code-bin`](https://aur.archlinux.org/packages/t3code-bin) and
-[`t3code-nightly-bin`](https://aur.archlinux.org/packages/t3code-nightly-bin) packages. Both
-repackage the official x86_64 AppImage from GitHub Releases.
+This directory contains templates for the `backplane-bin` and `backplane-nightly-bin` AUR packages.
+Both repackage the official x86_64 AppImage from Backplane GitHub Releases. The templates contain
+placeholders and are refreshed by `scripts/release.sh` for a supported release tag before they are
+built or published.
 
 ## Publishing
 
@@ -15,6 +16,6 @@ To validate a release on Arch Linux:
 
 ```bash
 sudo pacman -Syu --needed base-devel github-cli jq namcap
-GH_TOKEN=$(gh auth token) RELEASE_TAG=v0.0.33 \
+GH_TOKEN=$(gh auth token) RELEASE_TAG=<published-release-tag> \
   packaging/aur/scripts/release.sh
 ```

@@ -8,7 +8,7 @@ import bundle from "./kistack.bundle.json" with { type: "json" };
 export const kiStackSkillsDirectory = NodePath.join(
   NodeOS.homedir(),
   ".cache",
-  "t3cad",
+  "backplane",
   "kistack",
   bundle.revision,
 );

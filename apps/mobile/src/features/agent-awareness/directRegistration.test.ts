@@ -1,5 +1,5 @@
 import { beforeEach, expect, it, vi } from "vite-plus/test";
-import { EnvironmentId } from "@t3tools/contracts";
+import { EnvironmentId } from "@backplane/contracts";
 import type { SavedRemoteConnection } from "../../lib/connection";
 
 const mocks = vi.hoisted(() => ({

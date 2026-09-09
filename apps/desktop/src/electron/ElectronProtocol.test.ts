@@ -145,12 +145,12 @@ describe("ElectronProtocol", () => {
         Effect.gen(function* () {
           const protocol = yield* ElectronProtocol.ElectronProtocol;
           yield* protocol.registerDesktopProtocol({
-            scheme: "t3code-dev",
+            scheme: "backplane-dev",
             targetOrigin: new URL("http://127.0.0.1:5733/"),
             backendOrigin: new URL("http://127.0.0.1:3773/"),
             clerkFrontendApiHostname: undefined,
           });
-          return yield* Effect.promise(() => handler!(new Request("t3code-dev://app/")));
+          return yield* Effect.promise(() => handler!(new Request("backplane-dev://app/")));
         }),
       );
 
@@ -169,7 +169,7 @@ describe("ElectronProtocol", () => {
       const protocol = yield* ElectronProtocol.ElectronProtocol;
       const error = yield* Effect.scoped(
         protocol.registerDesktopProtocol({
-          scheme: "t3code-dev",
+          scheme: "backplane-dev",
           targetOrigin: new URL("http://127.0.0.1:3773/"),
           backendOrigin: new URL("http://127.0.0.1:3774/"),
           clerkFrontendApiHostname: undefined,
@@ -177,9 +177,9 @@ describe("ElectronProtocol", () => {
       ).pipe(Effect.flip);
 
       assert.instanceOf(error, ElectronProtocol.ElectronProtocolRegistrationError);
-      assert.equal(error.scheme, "t3code-dev");
+      assert.equal(error.scheme, "backplane-dev");
       assert.strictEqual(error.cause, cause);
-      assert.equal(error.message, 'Failed to register Electron protocol scheme "t3code-dev".');
+      assert.equal(error.message, 'Failed to register Electron protocol scheme "backplane-dev".');
     }).pipe(Effect.provide(ElectronProtocol.layer)),
   );
 
@@ -194,7 +194,7 @@ describe("ElectronProtocol", () => {
       const exit = yield* Effect.exit(
         Effect.scoped(
           protocol.registerDesktopProtocol({
-            scheme: "t3code",
+            scheme: "backplane",
             targetOrigin: new URL("http://127.0.0.1:3773/"),
             backendOrigin: new URL("http://127.0.0.1:3773/"),
             clerkFrontendApiHostname: undefined,
@@ -206,16 +206,16 @@ describe("ElectronProtocol", () => {
       if (exit._tag === "Failure") {
         const error = Cause.squash(exit.cause);
         assert.instanceOf(error, ElectronProtocol.ElectronProtocolUnregistrationError);
-        assert.equal(error.scheme, "t3code");
+        assert.equal(error.scheme, "backplane");
         assert.strictEqual(error.cause, cause);
-        assert.equal(error.message, 'Failed to unregister Electron protocol scheme "t3code".');
+        assert.equal(error.message, 'Failed to unregister Electron protocol scheme "backplane".');
       }
     }).pipe(Effect.provide(ElectronProtocol.layer)),
   );
 
   it("keeps executable sources host-restricted while allowing runtime network resources", () => {
     const policy = ElectronProtocol.makeDesktopContentSecurityPolicy({
-      scheme: "t3code",
+      scheme: "backplane",
       targetOrigin: new URL("http://127.0.0.1:3773/"),
       backendOrigin: new URL("http://127.0.0.1:3773/"),
       clerkFrontendApiHostname: "clerk.t3.codes",
@@ -237,13 +237,13 @@ describe("ElectronProtocol", () => {
     assert.deepEqual(directives["connect-src"], ["'self'", "http:", "https:", "ws:", "wss:"]);
     assert.deepEqual(directives["img-src"], [
       "'self'",
-      "t3code:",
+      "backplane:",
       "blob:",
       "data:",
       "http:",
       "https:",
     ]);
-    assert.deepEqual(directives["media-src"], ["'self'", "t3code:", "blob:", "http:", "https:"]);
-    assert.deepEqual(directives["font-src"], ["'self'", "t3code:", "data:"]);
+    assert.deepEqual(directives["media-src"], ["'self'", "backplane:", "blob:", "http:", "https:"]);
+    assert.deepEqual(directives["font-src"], ["'self'", "backplane:", "data:"]);
   });
 });

@@ -1,6 +1,6 @@
-import type { EnvironmentId, ServerConfig, ServerSelfUpdateCapability } from "@t3tools/contracts";
-import type { ServerUpdateState } from "@t3tools/client-runtime/state/server";
-import { compareSemverVersions, parseSemver } from "@t3tools/shared/semver";
+import type { EnvironmentId, ServerConfig, ServerSelfUpdateCapability } from "@backplane/contracts";
+import type { ServerUpdateState } from "@backplane/client-runtime/state/server";
+import { compareSemverVersions, parseSemver } from "@backplane/shared/semver";
 import * as Schema from "effect/Schema";
 
 import { APP_VERSION } from "./branding";
@@ -12,7 +12,7 @@ export interface VersionMismatch {
   readonly hint: string;
 }
 
-const VERSION_MISMATCH_DISMISSALS_STORAGE_KEY = "t3code:version-mismatch-dismissals:v1";
+const VERSION_MISMATCH_DISMISSALS_STORAGE_KEY = "backplane:version-mismatch-dismissals:v1";
 
 // Runtime failures retain their identity until the next attempt. Dismiss only
 // that attempt, across chat remounts, without clearing the error in Settings.
@@ -116,7 +116,7 @@ export function supportsServerUpdateThreadContinuation(
 
 /** The command to hand users whose server cannot update itself. */
 export function manualServerUpdateCommand(targetVersion: string): string {
-  return `npx t3@${targetVersion}`;
+  return `npx @backplane/server@${targetVersion}`;
 }
 
 export function serverUpdateGuidance(capability: ServerSelfUpdateCapability): string {

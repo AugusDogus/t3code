@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vite-plus/test";
-import { EnvironmentId, ThreadId, type IosNotificationRegistration } from "@t3tools/contracts";
-import type { AgentAwarenessState } from "@t3tools/shared/agentAwareness";
+import { EnvironmentId, ThreadId, type IosNotificationRegistration } from "@backplane/contracts";
+import type { AgentAwarenessState } from "@backplane/shared/agentAwareness";
 import {
   createDirectIosPush,
   makeDirectActivityPayload,

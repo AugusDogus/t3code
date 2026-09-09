@@ -4,17 +4,16 @@ import { isLegalDocumentUrl } from "./legal-document-url";
 
 describe("isLegalDocumentUrl", () => {
   it.each([
-    "https://t3.codes/legal",
-    "https://t3.codes/legal/",
-    "https://t3.codes/privacy-policy?source=app",
-    "https://t3.codes/terms-of-service#updates",
-    "https://t3.codes/security-policy",
+    "https://github.com/i2cjak/Backplane/blob/t3cad/LICENSE",
+    "https://github.com/i2cjak/Backplane/blob/t3cad/LICENSE#updates",
+    "https://github.com/i2cjak/Backplane/security/policy?source=app",
+    "https://github.com/i2cjak/Backplane/security/policy",
   ])("allows a configured legal document: %s", (url) => {
     expect(isLegalDocumentUrl(url)).toBe(true);
   });
 
   it.each([
-    "https://t3.codes/download",
+    "https://github.com/i2cjak/Backplane/releases",
     "https://example.com/legal",
     "javascript:alert(1)",
     "not-a-url",

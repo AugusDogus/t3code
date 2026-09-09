@@ -30,15 +30,15 @@ glab auth login
 Set an access token in the server's environment:
 
 ```bash
-export T3CODE_BITBUCKET_ACCESS_TOKEN="your-access-token"
+export BACKPLANE_BITBUCKET_ACCESS_TOKEN="your-access-token"
 ```
 
 Or use an Atlassian account email and API token with read/write access to repositories and pull
 requests, plus user read access (`read:user:bitbucket`):
 
 ```bash
-export T3CODE_BITBUCKET_EMAIL="you@example.com"
-export T3CODE_BITBUCKET_API_TOKEN="your-token"
+export BACKPLANE_BITBUCKET_EMAIL="you@example.com"
+export BACKPLANE_BITBUCKET_API_TOKEN="your-token"
 ```
 
 The access token takes precedence if both are configured. Restart the server after changing these

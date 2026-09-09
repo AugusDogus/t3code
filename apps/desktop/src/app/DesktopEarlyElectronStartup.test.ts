@@ -118,20 +118,4 @@ describe("DesktopEarlyElectronStartup", () => {
 
     assert.equal(preference, "gnome-libsecret");
   });
-
-  it("ignores an inherited T3CODE_HOME when Backplane has no override", () => {
-    const preference = resolveEarlyLinuxPasswordStorePreference({
-      env: {
-        T3CODE_HOME: "/home/user/.t3",
-      },
-      homeDirectory: "/home/user",
-      joinPath,
-      readFileString: (path) => {
-        assert.equal(path, "/home/user/.backplane/userdata/desktop-settings.json");
-        return JSON.stringify({ linuxPasswordStore: "kwallet6" });
-      },
-    });
-
-    assert.equal(preference, "kwallet6");
-  });
 });

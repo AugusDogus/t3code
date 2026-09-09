@@ -5,7 +5,7 @@ Open **Settings → Projects**. The project and machine pickers start at **All p
 
 Change the default model, workspace, automatic pull, agent browser access, or actions for projects that inherit those values.
 Select an individual project to override a default. Reset its row to inherit again. Changing a
-default preserves explicit project overrides. Workspace preferences in `t3.json` take precedence
+default preserves explicit project overrides. Workspace preferences in `backplane.json` take precedence
 over machine defaults when the project has no explicit workspace override.
 
 Select a machine to limit edits to it. **All machines** writes defaults to connected machines;

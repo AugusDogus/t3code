@@ -16,7 +16,7 @@ without replaying its transitions.
 
 ## Custom themes
 
-On web and desktop, choose **Create theme** to adjust a palette, or import a T3 Code or VS Code
+On web and desktop, choose **Create theme** to adjust a palette, or import a Backplane or VS Code
 theme. The theme editor's color picker lets you select an area of the app to find the color to
 change. Export your theme as JSON to share it.
 
@@ -30,19 +30,19 @@ it. **Duplicate** makes an independent copy you can edit. A saved custom theme w
 takes precedence. If the server stops publishing the selected theme, Backplane falls back to its
 standard theme.
 
-For an upstream T3 Code command-line server, run this on its host to set a
+For an Backplane command-line server, run this on its host to set a
 default and switch connected clients to it. These commands use that server's
 data directory, not Backplane's desktop state:
 
 ```bash
-t3 theme set nightfall
+backplane theme set nightfall
 ```
 
 Clients that are offline apply it when they reconnect. Each client applies the setting once;
-choosing another theme afterward sticks until the next `t3 theme set`. Run the command again to
+choosing another theme afterward sticks until the next `backplane theme set`. Run the command again to
 reapply it, even if the name is unchanged.
 
-`t3 theme clear` removes the default without changing anyone's current theme. `t3 theme show` lists
+`backplane theme clear` removes the default without changing anyone's current theme. `backplane theme show` lists
 the default and published themes.
 
 ### Publish a theme

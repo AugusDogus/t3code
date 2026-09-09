@@ -350,7 +350,7 @@ export interface EnvironmentSessionPrincipalShape {
 export class EnvironmentAuthenticatedPrincipal extends Context.Service<
   EnvironmentAuthenticatedPrincipal,
   EnvironmentSessionPrincipalShape
->()("@t3tools/contracts/environmentHttp/EnvironmentAuthenticatedPrincipal") {}
+>()("@backplane/contracts/environmentHttp/EnvironmentAuthenticatedPrincipal") {}
 
 export class EnvironmentAuthenticatedAuth extends HttpApiMiddleware.Service<
   EnvironmentAuthenticatedAuth,
@@ -409,7 +409,7 @@ export const AuthOtherClientSessionsRevokeResult = Schema.Struct({
 export type AuthOtherClientSessionsRevokeResult = typeof AuthOtherClientSessionsRevokeResult.Type;
 
 class EnvironmentMetadataHttpApi extends HttpApiGroup.make("metadata").add(
-  HttpApiEndpoint.get("descriptor", "/.well-known/t3/environment", {
+  HttpApiEndpoint.get("descriptor", "/.well-known/backplane/environment", {
     success: ExecutionEnvironmentDescriptor,
   }),
 ) {}
@@ -593,6 +593,8 @@ class EnvironmentConnectHttpApi extends HttpApiGroup.make("connect")
     }).middleware(EnvironmentAuthenticatedAuth),
   )
   .add(
+    // These paths are the established T3 Connect relay protocol. The Backplane
+    // client-facing namespace does not change the external relay contract.
     HttpApiEndpoint.post("health", "/api/t3-connect/health", {
       payload: RelayCloudEnvironmentHealthRequest,
       success: RelayEnvironmentHealthResponse,
@@ -607,7 +609,7 @@ class EnvironmentConnectHttpApi extends HttpApiGroup.make("connect")
     }),
   )
   .add(
-    HttpApiEndpoint.post("t3MintCredential", "/api/t3-connect/mint-credential", {
+    HttpApiEndpoint.post("backplaneMintCredential", "/api/t3-connect/mint-credential", {
       payload: RelayCloudMintCredentialRequest,
       success: RelayEnvironmentMintResponse,
       error: EnvironmentHttpCloudErrors,

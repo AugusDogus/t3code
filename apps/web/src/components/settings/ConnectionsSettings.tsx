@@ -33,12 +33,12 @@ import {
   type DesktopWslState,
   type EnvironmentId,
   resolveEnvironmentMachineKind,
-} from "@t3tools/contracts";
-import { connectionStatusText } from "@t3tools/client-runtime/connection";
+} from "@backplane/contracts";
+import { connectionStatusText } from "@backplane/client-runtime/connection";
 import {
   isAtomCommandInterrupted,
   squashAtomCommandFailure,
-} from "@t3tools/client-runtime/state/runtime";
+} from "@backplane/client-runtime/state/runtime";
 import * as DateTime from "effect/DateTime";
 import * as Option from "effect/Option";
 
@@ -1697,7 +1697,7 @@ function ConfiguredCloudLinkRow({ canManageRelay }: { readonly canManageRelay: b
     <>
       {window.desktopBridge ? (
         <SettingsRow
-          title={searchableSetting("t3-connect").title}
+          title={searchableSetting("backplane-connect").title}
           description={
             managedTunnelActive
               ? "This environment is available to your other devices through T3 Connect."

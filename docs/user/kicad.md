@@ -25,7 +25,7 @@ Generated output is discovered even in Git-ignored folders. Saved changes refres
 
 Use **STEP** to inspect `.step` and `.stp` models. The project picker lists the most recently edited files first; **Open file** also accepts a file from your device without uploading it. Drag to rotate, pinch or scroll to zoom, and use **Fit model** to restore the view. STEP previews run in the viewer and support files up to 100 MB.
 
-The 3D preview requires `kicad-cli` with GLB export on the environment running T3. The preview includes outer copper, pads, silkscreen, and translucent soldermask using the board’s stackup colors. Exports go into a separate temporary cache. Gerber rendering requires `python3` there. Neither operation modifies the project.
+The 3D preview requires `kicad-cli` with GLB export on the environment running Backplane. The preview includes outer copper, pads, silkscreen, and translucent soldermask using the board’s stackup colors. Exports go into a separate temporary cache. Gerber rendering requires `python3` there. Neither operation modifies the project.
 
 Use **Open KiCad viewer in browser** to let your agent inspect and interact with the viewer through the collaborative browser. Its link grants temporary read-only access to this workspace; reopen the panel after the link expires or the server restarts. The `k3eda-viewer` agent skill includes a helper for finding and configuring project files.
 

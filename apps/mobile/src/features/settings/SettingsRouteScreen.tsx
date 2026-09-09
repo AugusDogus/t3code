@@ -17,7 +17,7 @@ import {
   settleAsyncResult,
   settlePromise,
   squashAtomCommandFailure,
-} from "@t3tools/client-runtime/state/runtime";
+} from "@backplane/client-runtime/state/runtime";
 import { AndroidScreenHeader } from "../../components/AndroidScreenHeader";
 import { AppText as Text, AppTextInput as TextInput } from "../../components/AppText";
 import { supportsAgentAwarenessPush } from "../agent-awareness/capabilities";
@@ -43,13 +43,13 @@ import {
   MAX_SIDEBAR_AUTO_SETTLE_AFTER_DAYS,
   MIN_SIDEBAR_AUTO_SETTLE_AFTER_DAYS,
   type ServerSettingsPatch,
-} from "@t3tools/contracts";
+} from "@backplane/contracts";
 import {
   filterSharedServerPatch,
   findSharedSettingsMismatches,
   pickSharedServerSettings,
   supportsSharedSettingsSync,
-} from "@t3tools/client-runtime/state/shared-settings";
+} from "@backplane/client-runtime/state/shared-settings";
 import { useThreadListV2Enabled } from "../threads/use-thread-list-v2-enabled";
 import {
   type AppUpdateCheckState,
@@ -381,7 +381,7 @@ function ConfiguredSettingsRouteScreen() {
 
       Alert.alert(
         "Disable notifications",
-        "Notification permission is controlled by iOS. Open Settings to disable notifications for T3CAD.",
+        "Notification permission is controlled by iOS. Open Settings to disable notifications for BACKPLANE.",
         [
           { text: "Cancel", style: "cancel" },
           { text: "Open Settings", onPress: () => void Linking.openSettings() },
@@ -471,13 +471,13 @@ function ConfiguredSettingsRouteScreen() {
           <SettingsSection title="Account">
             <SettingsRow
               icon="person.crop.circle"
-              label="T3 Account"
+              label="T3 Connect account"
               value={accountLabel}
               onPress={openAccount}
             />
           </SettingsSection>
           <Text className="px-2 text-sm text-foreground-muted">
-            T3CAD works locally without signing in. Cloud features are optional.
+            BACKPLANE works locally without signing in. Cloud features are optional.
           </Text>
         </View>
 
@@ -679,7 +679,7 @@ function AutoSettleSettingsRows() {
             }}
             className="rounded-full bg-subtle px-4 py-2 active:opacity-70"
           >
-            <Text className="text-base font-t3-medium text-foreground">Apply to all</Text>
+            <Text className="text-base font-backplane-medium text-foreground">Apply to all</Text>
           </Pressable>
         </View>
       ) : null}

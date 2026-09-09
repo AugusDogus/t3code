@@ -6,8 +6,8 @@ import {
   type ServerProvider,
   type ServerProviderUpdatedPayload,
   type ServerProviderUpdateState,
-} from "@t3tools/contracts";
-import { resolveSpawnCommand } from "@t3tools/shared/shell";
+} from "@backplane/contracts";
+import { resolveSpawnCommand } from "@backplane/shared/shell";
 import * as Cause from "effect/Cause";
 import * as Context from "effect/Context";
 import * as Data from "effect/Data";
@@ -58,7 +58,7 @@ export interface ProviderMaintenanceRunnerShape {
 export class ProviderMaintenanceRunner extends Context.Service<
   ProviderMaintenanceRunner,
   ProviderMaintenanceRunnerShape
->()("t3/provider/providerMaintenanceRunner") {}
+>()("@backplane/server/provider/providerMaintenanceRunner") {}
 
 class ProviderMaintenanceCommandError extends Data.TaggedError("ProviderMaintenanceCommandError")<{
   readonly message: string;

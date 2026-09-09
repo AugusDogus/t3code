@@ -33,7 +33,7 @@ const productionMacIconPngPath = NodePath.join(
   "prod",
   "backplane-macos-1024.png",
 );
-// oxlint-disable-next-line t3code/no-global-process-runtime -- Standalone launcher script has no Effect runtime.
+// oxlint-disable-next-line backplane/no-global-process-runtime -- Standalone launcher script has no Effect runtime.
 const hostPlatform = NodeOS.platform();
 
 function setPlistString(plistPath, key, value) {
@@ -113,12 +113,12 @@ export function makeDevelopmentLauncherScript({
 }) {
   const envEntries = [
     ["VITE_DEV_SERVER_URL", environment.VITE_DEV_SERVER_URL],
-    ["T3CODE_PORT", environment.T3CODE_PORT],
+    ["BACKPLANE_PORT", environment.BACKPLANE_PORT],
     ["BACKPLANE_HOME", environment.BACKPLANE_HOME],
-    ["T3CODE_COMMIT_HASH", environment.T3CODE_COMMIT_HASH],
-    ["T3CODE_OTLP_TRACES_URL", environment.T3CODE_OTLP_TRACES_URL],
-    ["T3CODE_OTLP_EXPORT_INTERVAL_MS", environment.T3CODE_OTLP_EXPORT_INTERVAL_MS],
-    ["T3CODE_DESKTOP_APP_USER_MODEL_ID", APP_BUNDLE_ID],
+    ["BACKPLANE_COMMIT_HASH", environment.BACKPLANE_COMMIT_HASH],
+    ["BACKPLANE_OTLP_TRACES_URL", environment.BACKPLANE_OTLP_TRACES_URL],
+    ["BACKPLANE_OTLP_EXPORT_INTERVAL_MS", environment.BACKPLANE_OTLP_EXPORT_INTERVAL_MS],
+    ["BACKPLANE_DESKTOP_APP_USER_MODEL_ID", APP_BUNDLE_ID],
   ].filter((entry) => typeof entry[1] === "string" && entry[1].trim().length > 0);
   return [
     "#!/bin/sh",
@@ -126,7 +126,7 @@ export function makeDevelopmentLauncherScript({
       ([name, value]) =>
         `if [ -z "\${${name}:-}" ]; then export ${name}=${shellSingleQuote(value)}; fi`,
     ),
-    `exec ${shellSingleQuote(electronBinaryPath)} --t3code-dev-root=${shellSingleQuote(desktopRoot)} ${shellSingleQuote(mainEntryPath)} "$@"`,
+    `exec ${shellSingleQuote(electronBinaryPath)} --backplane-dev-root=${shellSingleQuote(desktopRoot)} ${shellSingleQuote(mainEntryPath)} "$@"`,
     "",
   ].join("\n");
 }

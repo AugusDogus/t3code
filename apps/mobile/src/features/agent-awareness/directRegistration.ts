@@ -3,7 +3,7 @@ import * as Notifications from "expo-notifications";
 import {
   IosNotificationRegistrationResult,
   type IosNotificationRegistration,
-} from "@t3tools/contracts";
+} from "@backplane/contracts";
 import * as Schema from "effect/Schema";
 import type { SavedRemoteConnection } from "../../lib/connection";
 import { loadOrCreateAgentAwarenessDeviceId } from "../../persistence/imperative";
@@ -96,7 +96,9 @@ async function registerNow(input: RegistrationInput) {
           timer = setTimeout(
             () =>
               reject(
-                new Error("Apple has not returned a notification token. Reopen T3CAD to retry."),
+                new Error(
+                  "Apple has not returned a notification token. Reopen BACKPLANE to retry.",
+                ),
               ),
             10_000,
           );

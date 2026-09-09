@@ -1,6 +1,6 @@
 import * as NodeOS from "node:os";
 
-import { parsePersistedServerObservabilitySettings } from "@t3tools/shared/serverSettings";
+import { parsePersistedServerObservabilitySettings } from "@backplane/shared/serverSettings";
 import * as Context from "effect/Context";
 import * as Crypto from "effect/Crypto";
 import * as Effect from "effect/Effect";
@@ -62,7 +62,7 @@ export class DesktopBackendConfiguration extends Context.Service<
     // backend that actually resolved to Windows.
     readonly resolvePrimaryLabel: Effect.Effect<string>;
   }
->()("@t3tools/desktop/backend/DesktopBackendConfiguration") {}
+>()("@backplane/desktop/backend/DesktopBackendConfiguration") {}
 
 interface BackendObservabilitySettings {
   readonly otlpTracesUrl: Option.Option<string>;
@@ -75,19 +75,19 @@ const emptyBackendObservabilitySettings: BackendObservabilitySettings = {
 };
 
 const DESKTOP_BACKEND_ENV_NAMES = [
-  "T3CODE_PORT",
-  "T3CODE_MODE",
-  "T3CODE_NO_BROWSER",
-  "T3CODE_HOST",
-  "T3CODE_DESKTOP_WS_URL",
-  "T3CODE_DESKTOP_LAN_ACCESS",
-  "T3CODE_DESKTOP_LAN_HOST",
-  "T3CODE_DESKTOP_HTTPS_ENDPOINTS",
-  "T3CODE_TAILSCALE_SERVE",
-  "T3CODE_TAILSCALE_SERVE_PORT",
+  "BACKPLANE_PORT",
+  "BACKPLANE_MODE",
+  "BACKPLANE_NO_BROWSER",
+  "BACKPLANE_HOST",
+  "BACKPLANE_DESKTOP_WS_URL",
+  "BACKPLANE_DESKTOP_LAN_ACCESS",
+  "BACKPLANE_DESKTOP_LAN_HOST",
+  "BACKPLANE_DESKTOP_HTTPS_ENDPOINTS",
+  "BACKPLANE_TAILSCALE_SERVE",
+  "BACKPLANE_TAILSCALE_SERVE_PORT",
   // The desktop bootstrap carries the authoritative state directory. Leaving
   // this inherited value in place lets the server CLI override that payload.
-  "T3CODE_HOME",
+  "BACKPLANE_HOME",
 ] as const;
 
 // Sensitive env vars that the WSL backend needs but Windows process.env won't
@@ -146,7 +146,7 @@ const logBackendObservabilitySettingsReadFailure = (
 };
 
 function resourceMonitorBinaryName(platform: NodeJS.Platform): string {
-  return platform === "win32" ? "t3-resource-monitor.exe" : "t3-resource-monitor";
+  return platform === "win32" ? "backplane-resource-monitor.exe" : "backplane-resource-monitor";
 }
 
 const resolveResourceMonitorPath = Effect.fn(
@@ -507,7 +507,7 @@ const resolvePrimaryStartConfig = Effect.fn("desktop.backendConfiguration.resolv
       mode: "desktop" as const,
       noBrowser: true,
       port: backendExposure.port,
-      t3Home: environment.baseDir,
+      backplaneHome: environment.baseDir,
       host: backendExposure.bindHost,
       desktopBootstrapToken: input.bootstrapToken,
       tailscaleServeEnabled: backendExposure.tailscaleServeEnabled,
@@ -531,7 +531,7 @@ const resolvePrimaryStartConfig = Effect.fn("desktop.backendConfiguration.resolv
         // An explicit base directory resolves to userdata. Keep that value in
         // the child environment so the server preserves the desktop choice.
         ...(environment.stateDir === environment.path.join(environment.baseDir, "userdata")
-          ? { T3CODE_HOME: environment.baseDir }
+          ? { BACKPLANE_HOME: environment.baseDir }
           : {}),
         ELECTRON_RUN_AS_NODE: "1",
         ...resolveBundledRuntimeEnvironment(environment),
@@ -584,7 +584,7 @@ const resolveWslStartConfig = Effect.fn("desktop.backendConfiguration.resolveWsl
     // Resolve this in the Linux server, where ~ is the distro user's home.
     // Passing the Windows-side baseDir would share the SQLite file with the
     // primary.
-    t3Home: "~/.backplane",
+    backplaneHome: "~/.backplane",
     host: wslBindHost,
     desktopBootstrapToken: input.bootstrapToken,
     // PortSchema rejects 0, so when tailscale serve is disabled we still
@@ -681,12 +681,12 @@ const resolveWslStartConfig = Effect.fn("desktop.backendConfiguration.resolveWsl
 
   // Build an explicit copy of process.env minus state-home overrides (dev-runner
   // exports the Windows-side base dir for the primary; if it leaks into
-  // the WSL backend the Linux side ends up sharing C:\Users\...\.t3 via
+  // the WSL backend the Linux side ends up sharing C:\Users\...\.backplane via
   // /mnt/c, which means both backends read/write the same database and
   // their env-ids collide).
   const parentEnvWithoutStateHome: Record<string, string | undefined> = {};
   for (const [key, value] of Object.entries(process.env)) {
-    if (key === "T3CODE_HOME" || key === "BACKPLANE_HOME") continue;
+    if (key === "BACKPLANE_HOME") continue;
     parentEnvWithoutStateHome[key] = value;
   }
   const wslEnv = mergeWslEnv(parentEnvWithoutStateHome.WSLENV, forwardedEnvNames);
@@ -755,7 +755,6 @@ const resolveWslStartConfig = Effect.fn("desktop.backendConfiguration.resolveWsl
       "--exec",
       "env",
       `PATH=${launchPath}`,
-      "T3CODE_HOME=",
       "BACKPLANE_HOME=",
       preflight.nodePath,
       preflight.linuxEntryPath,

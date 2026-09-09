@@ -1,5 +1,5 @@
 import { useAtomValue } from "@effect/atom-react";
-import { projectThreadAwareness, type AgentAwarenessState } from "@t3tools/shared/agentAwareness";
+import { projectThreadAwareness, type AgentAwarenessState } from "@backplane/shared/agentAwareness";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { AppState, Platform } from "react-native";
 import * as Notifications from "expo-notifications";
@@ -102,7 +102,7 @@ export function useLocalAgentAwareness() {
         try {
           const updatedAt = new Date().toISOString();
           const props: AgentActivityProps = {
-            title: "T3CAD",
+            title: "BACKPLANE",
             subtitle: "Agent work in progress",
             activeCount: 1,
             updatedAt,

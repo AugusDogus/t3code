@@ -35,23 +35,10 @@ The offered action depends on how the server runs:
 | **Update the desktop app** | Update the desktop app on the machine running the server, then reopen it if needed.                                                                                                             |
 | **Copy update command**    | Stop the command-line server on its host and relaunch with the copied command, keeping your usual startup options.                                                                              |
 
-The `npx t3` commands manage upstream T3 Code servers, not Backplane. Backplane
-release versions do not correspond to T3 Code package versions. For an upstream
-background service, run its chosen T3 Code version on the host:
-
-```sh
-npx t3@<t3-version> service update
-```
-
-Replace `<t3-version>` with a published T3 Code version compatible with that
-server's clients. An older
-service launcher may require this local update before it supports remote updates
-and rollback.
-
-For an upstream foreground server, use `npx t3@<t3-version>`. Add
-`serve` if you normally run without a browser, and preserve options such as
-`--host` or `--tailscale-serve`. See
-[background services](./background-service.md) for service management.
+For a locally built command-line server, rebuild the desired Backplane revision
+and restart it with the same options and base directory. Package-managed service
+updates require a published `@backplane/server` version, which is not available
+with the alpha AppImage.
 
 ## If an update fails
 
@@ -60,13 +47,8 @@ update can roll back to the previous version. If the update still fails:
 
 1. Retry the offered action once.
 2. Check that you updated the server's machine, not only the device you are using.
-3. For an upstream command-line server, stop it and relaunch a compatible T3 Code version.
+3. For an command-line server, stop it and relaunch a compatible Backplane version.
 
 ## Mobile updates
 
-Backplane mobile releases are not available yet. For the upstream T3 Code mobile app,
-install App Store or Google Play releases as usual. The mobile app can also
-download updates in the background and apply them when you next leave the app.
-It saves drafts and queued messages before restarting. If you keep the app open
-for a long time, it may ask to install immediately; choosing **Later** leaves the
-update queued for the next suitable moment.
+Backplane mobile releases are not available yet.

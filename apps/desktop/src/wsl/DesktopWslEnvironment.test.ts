@@ -74,7 +74,7 @@ const readField = (stdout: string, field: string) => {
   return line.slice(field.length + 1).trim();
 };
 
-const SERVER_ENTRY_SOURCE = 'console.log("t3code wsl runtime test server");';
+const SERVER_ENTRY_SOURCE = 'console.log("backplane wsl runtime test server");';
 
 const makeDistroListSpawner = (result: { readonly stdout?: string; readonly exitCode?: number }) =>
   ChildProcessSpawner.make(() =>
@@ -262,7 +262,9 @@ describe("WSL runtime cache", () => {
     );
     // The marker the probe reads must sit beside the binary, or the runtime is
     // just as unusable as one missing pty.node outright.
-    expect(script).toContain('    [ -f "${candidate%/*}/t3code-wsl-node-pty.json" ] || continue');
+    expect(script).toContain(
+      '    [ -f "${candidate%/*}/backplane-wsl-node-pty.json" ] || continue',
+    );
 
     // Readiness gates the short-circuit, so a cache missing the payload
     // reinstalls from the archive instead of being reused forever.
@@ -295,7 +297,7 @@ describe("WSL runtime cache", () => {
     // which has to be a miss rather than a pass.
     expect(script).toContain('    [ -n "$recorded_entry_digest" ] &&');
     expect(script).toContain(
-      `printf '%s\\n' "$installed_entry_digest" > "$runtime_tmp/.t3code-wsl-runtime-ready"`,
+      `printf '%s\\n' "$installed_entry_digest" > "$runtime_tmp/.backplane-wsl-runtime-ready"`,
     );
 
     // The digest is recorded after extraction and before promotion.
@@ -303,7 +305,7 @@ describe("WSL runtime cache", () => {
     const digestRecorded = script.indexOf(
       'installed_entry_digest=$(runtime_server_entry_digest "$runtime_tmp")',
     );
-    const markerWritten = script.indexOf('> "$runtime_tmp/.t3code-wsl-runtime-ready"');
+    const markerWritten = script.indexOf('> "$runtime_tmp/.backplane-wsl-runtime-ready"');
     const promoted = script.indexOf('mv -T "$runtime_tmp" "$runtime_root"');
     expect(digestRecorded).toBeGreaterThan(extracted);
     expect(markerWritten).toBeGreaterThan(digestRecorded);
@@ -322,7 +324,7 @@ describe("WSL runtime cache", () => {
     // The extracted tree is rejected before the ready marker is written, so a
     // defective archive falls back to the mounted tree instead of caching.
     const payloadValidated = script.indexOf('node_pty_payload_present "$runtime_tmp"');
-    const markerWritten = script.indexOf('> "$runtime_tmp/.t3code-wsl-runtime-ready"');
+    const markerWritten = script.indexOf('> "$runtime_tmp/.backplane-wsl-runtime-ready"');
     const promoted = script.indexOf('mv -T "$runtime_tmp" "$runtime_root"');
     expect(payloadValidated).toBeGreaterThan(-1);
     expect(markerWritten).toBeGreaterThan(payloadValidated);
@@ -344,7 +346,7 @@ describe("WSL runtime cache", () => {
     expect(script).toContain('[ "$candidate" -nt "$previous_runtime" ]');
     expect(script).toContain('[ "$candidate" != "$current_runtime" ] || continue');
     expect(script).toContain('[ "$candidate" != "$previous_runtime" ] || continue');
-    expect(script).toContain('[ -f "$candidate/.t3code-wsl-runtime-ready" ] || continue');
+    expect(script).toContain('[ -f "$candidate/.backplane-wsl-runtime-ready" ] || continue');
     expect(script).toContain('rm -rf -- "$candidate"');
   });
 
@@ -387,7 +389,7 @@ describe("WSL runtime cache", () => {
     // Readiness is a presence check, so a tree whose pty.node is present but
     // unloadable stays ready forever unless the probe can revoke the marker.
     expect(script).toContain(
-      'rm -f "$HOME/.backplane/wsl-runtime/1.2.3_x64/.t3code-wsl-runtime-ready"',
+      'rm -f "$HOME/.backplane/wsl-runtime/1.2.3_x64/.backplane-wsl-runtime-ready"',
     );
     // Deleting the tree here would pull it out from under any backend still
     // running from it; the next install moves an unready root aside instead.
@@ -417,7 +419,7 @@ describe.skipIf(posixShellRunner === null)("WSL runtime install script (executed
         `printf '%s' ${sh(SERVER_ENTRY_SOURCE)} > "$stage/apps/server/dist/bin.mjs"`,
         `printf '%s' '{"name":"node-pty","version":"0.0.0-test"}' > "$stage/node_modules/node-pty/package.json"`,
         `printf '%s' 'pty-native-payload' > "$stage/node_modules/node-pty/prebuilds/linux-x64/pty.node"`,
-        `printf '%s' '{"arch":"x64"}' > "$stage/node_modules/node-pty/prebuilds/linux-x64/t3code-wsl-node-pty.json"`,
+        `printf '%s' '{"arch":"x64"}' > "$stage/node_modules/node-pty/prebuilds/linux-x64/backplane-wsl-node-pty.json"`,
         `tar -czf "$work/wsl-runtime.tar.gz" -C "$stage" apps/server/dist node_modules`,
         `printf 'work:%s\\n' "$work"`,
         `printf 'archiveSha:%s\\n' "$(sha256sum "$work/wsl-runtime.tar.gz" | cut -d ' ' -f 1)"`,
@@ -510,9 +512,9 @@ describe.skipIf(posixShellRunner === null)("WSL runtime install script (executed
         ': > "$work/tar-calls"',
         'PATH="$work/bin:$PATH"',
         "export PATH",
-        `cat > "$work/install.sh" <<'T3CODE_INSTALL_SCRIPT'`,
+        `cat > "$work/install.sh" <<'BACKPLANE_INSTALL_SCRIPT'`,
         fixture.installScript(),
-        "T3CODE_INSTALL_SCRIPT",
+        "BACKPLANE_INSTALL_SCRIPT",
         // Both racers run the same file, and neither file path contains the
         // runtime root, so the script's own /proc scan cannot see them.
         'sh "$work/install.sh" > "$work/first.out" 2>&1 &',
@@ -597,13 +599,13 @@ describe.skipIf(posixShellRunner === null)("WSL runtime install script (executed
         "set -eu",
         `runtime_parent=${sh(fixture.runtimeParent)}`,
         'mkdir -p "$runtime_parent/sha256-current" "$runtime_parent/sha256-previous"',
-        'printf ready > "$runtime_parent/sha256-current/.t3code-wsl-runtime-ready"',
-        'printf ready > "$runtime_parent/sha256-previous/.t3code-wsl-runtime-ready"',
+        'printf ready > "$runtime_parent/sha256-current/.backplane-wsl-runtime-ready"',
+        'printf ready > "$runtime_parent/sha256-previous/.backplane-wsl-runtime-ready"',
         `touch -d "10 minutes ago" ${sh(fixture.runtimeRoot)}`,
         'touch -d "1 minute ago" "$runtime_parent/sha256-previous"',
-        `cat > ${sh(`${fixture.work}/select.sh`)} <<'T3CODE_SELECT_SCRIPT'`,
+        `cat > ${sh(`${fixture.work}/select.sh`)} <<'BACKPLANE_SELECT_SCRIPT'`,
         fixture.installScript(),
-        "T3CODE_SELECT_SCRIPT",
+        "BACKPLANE_SELECT_SCRIPT",
         `sh ${sh(`${fixture.work}/select.sh`)}`,
         `HOME=${sh(`${fixture.work}/home`)}`,
         "export HOME",
@@ -623,10 +625,10 @@ describe.skipIf(posixShellRunner === null)("WSL runtime install script (executed
         "set -eu",
         `runtime_parent=${sh(fixture.runtimeParent)}`,
         'mkdir -p "$runtime_parent/sha256-current" "$runtime_parent/sha256-previous"',
-        'printf ready > "$runtime_parent/sha256-current/.t3code-wsl-runtime-ready"',
-        'printf ready > "$runtime_parent/sha256-previous/.t3code-wsl-runtime-ready"',
+        'printf ready > "$runtime_parent/sha256-current/.backplane-wsl-runtime-ready"',
+        'printf ready > "$runtime_parent/sha256-previous/.backplane-wsl-runtime-ready"',
         `touch -d "10 minutes ago" ${sh(fixture.runtimeRoot)}`,
-        `touch -d "10 minutes ago" ${sh(`${fixture.runtimeRoot}/.t3code-wsl-runtime-selected`)}`,
+        `touch -d "10 minutes ago" ${sh(`${fixture.runtimeRoot}/.backplane-wsl-runtime-selected`)}`,
         'touch -d "1 minute ago" "$runtime_parent/sha256-previous"',
         `HOME=${sh(`${fixture.work}/home`)}`,
         "export HOME",
@@ -646,7 +648,7 @@ describe.skipIf(posixShellRunner === null)("WSL runtime install script (executed
         "set -eu",
         `runtime_root=${sh(fixture.runtimeRoot)}`,
         `runtime_parent=${sh(fixture.runtimeParent)}`,
-        'rm "$runtime_root/.t3code-wsl-runtime-ready"',
+        'rm "$runtime_root/.backplane-wsl-runtime-ready"',
         'sh -c "sleep 30" "$runtime_root/apps/server/dist/bin.mjs" >/dev/null 2>&1 &',
         "active_pid=$!",
         "sleep 0.1",
@@ -674,7 +676,7 @@ describe.skipIf(posixShellRunner === null)("WSL runtime install script (executed
         'home="$work/home"',
         'runtime_parent="$home/.backplane/wsl-runtime"',
         'mkdir -p "$runtime_parent"',
-        'make_ready() { mkdir -p "$runtime_parent/$1/apps/server/dist"; printf ready > "$runtime_parent/$1/.t3code-wsl-runtime-ready"; }',
+        'make_ready() { mkdir -p "$runtime_parent/$1/apps/server/dist"; printf ready > "$runtime_parent/$1/.backplane-wsl-runtime-ready"; }',
         "make_ready sha256-current",
         "make_ready sha256-previous",
         "make_ready sha256-active",

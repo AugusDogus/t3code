@@ -14,8 +14,8 @@ import * as Tracer from "effect/Tracer";
 import * as HttpRouter from "effect/unstable/http/HttpRouter";
 import * as HttpServerRequest from "effect/unstable/http/HttpServerRequest";
 import * as HttpServerResponse from "effect/unstable/http/HttpServerResponse";
-import { EnvironmentId } from "@t3tools/contracts";
-import { RelayEnvironmentAuth } from "@t3tools/contracts/relay";
+import { EnvironmentId } from "@backplane/contracts";
+import { RelayEnvironmentAuth } from "@backplane/contracts/relay";
 
 import {
   RELAY_REQUEST_DEADLINE_MS,
@@ -47,7 +47,7 @@ const relaySettings: RelayConfiguration.RelayConfiguration["Service"] = {
     teamId: "apns-team",
     keyId: "apns-key",
     privateKey: Redacted.make("apns-private-key"),
-    bundleId: "com.example.t3",
+    bundleId: "com.example.backplane",
     environment: "sandbox",
   },
   clerkSecretKey: Redacted.make("clerk-secret-key"),

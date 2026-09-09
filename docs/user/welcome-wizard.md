@@ -8,15 +8,15 @@ hosted app for the first time. Existing workspaces skip this flow.
 - **This computer** runs agents on the computer that hosts Backplane. It does not
   require an account.
 - **T3 Connect** connects computers that are signed in to your account. Run
-  `npx t3 connect` for an upstream T3 Code command-line host, then run
-  `npx t3 serve` so the computer stays available.
+  `backplane connect` for a command-line host, then run
+  `backplane serve` so the computer stays available.
 - **Pair a server** connects directly to a server on your network or tailnet.
-  Start the server with `npx t3 serve`, then run `npx t3 pair --tailscale` and
-  paste the pairing link. You can also run `npx t3 serve --host <address>` and
-  use `npx t3 pair` when the server is already reachable on your network.
+  Start the server with `backplane serve`, then run `backplane pair --tailscale` and
+  paste the pairing link. You can also run `backplane serve --host <address>` and
+  use `backplane pair` when the server is already reachable on your network.
 
-The `npx t3` commands manage upstream T3 Code servers. For a Backplane desktop
-host, create its pairing link in **Settings → Connections** instead.
+The command-line examples require a locally built Backplane CLI on `PATH`.
+For an AppImage host, create its pairing link in **Settings → Connections**.
 
 If Backplane cannot confirm the workspace during startup, the setup flow shows
 **Still connecting** instead of opening the app. Select **Reload** to try again.

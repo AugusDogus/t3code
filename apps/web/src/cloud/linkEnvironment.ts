@@ -14,15 +14,15 @@ import {
   EnvironmentHttpUnauthorizedError,
   EnvironmentId,
   WS_METHODS,
-} from "@t3tools/contracts";
+} from "@backplane/contracts";
 import {
   type RelayEnvironmentLinkResponse,
   type RelayManagedEndpointProviderKind,
-} from "@t3tools/contracts/relay";
-import { EnvironmentRegistry } from "@t3tools/client-runtime/connection";
-import { request, runStream } from "@t3tools/client-runtime/rpc";
-import { makeEnvironmentHttpApiClient } from "@t3tools/client-runtime/rpc";
-import { ManagedRelay, relayProtectedErrorMessage } from "@t3tools/client-runtime/relay";
+} from "@backplane/contracts/relay";
+import { EnvironmentRegistry } from "@backplane/client-runtime/connection";
+import { request, runStream } from "@backplane/client-runtime/rpc";
+import { makeEnvironmentHttpApiClient } from "@backplane/client-runtime/rpc";
+import { ManagedRelay, relayProtectedErrorMessage } from "@backplane/client-runtime/relay";
 
 import { primaryEnvironmentHttpLayer } from "../environments/primary/httpLayer";
 import { resolveCloudPublicConfig } from "./publicConfig";
@@ -266,7 +266,7 @@ export function linkPrimaryEnvironmentToCloud(input: {
     const configuredRelayUrl = relayUrl();
     if (!configuredRelayUrl) {
       return yield* new CloudEnvironmentLinkError({
-        message: "T3CODE_RELAY_URL is not configured.",
+        message: "BACKPLANE_RELAY_URL is not configured.",
       });
     }
     const managedTunnelsEnabled = (input.mode ?? "managed") === "managed";

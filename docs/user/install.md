@@ -14,10 +14,10 @@ font files and falls back to your system monospace font.
 ## First run
 
 Backplane stores its threads and settings in `~/.backplane/userdata`, separately
-from T3 Code. It starts with an empty workspace and does not import T3 Code's
+from Backplane. It starts with an empty workspace and does not import Backplane's
 sessions or settings. You can keep both apps installed and running.
 To choose a different Backplane data directory, set `BACKPLANE_HOME` before
-launching it. Backplane ignores `T3CODE_HOME`.
+launching it. Backplane does not automatically reuse Backplane state.
 
 Open **Settings → Providers**, enable your coding provider, and follow its
 installation and sign-in instructions. Provider accounts and any required

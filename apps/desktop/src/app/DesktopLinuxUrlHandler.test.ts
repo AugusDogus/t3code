@@ -23,9 +23,9 @@ const makeEnvironment = (overrides: Record<string, unknown> = {}) =>
     isPackaged: true,
     isDevelopment: false,
     displayName: "Backplane (Alpha)",
-    linuxWmClass: "t3code",
+    linuxWmClass: "backplane",
     linuxApplicationsDir: "/home/alice/.local/share/applications",
-    appImagePath: Option.some("/home/alice/Applications/T3-Code.AppImage"),
+    appImagePath: Option.some("/home/alice/Applications/Backplane.AppImage"),
     path: { join: (...parts: ReadonlyArray<string>) => parts.join("/") },
     ...overrides,
   } as unknown as DesktopEnvironment.DesktopEnvironment["Service"]);
@@ -106,7 +106,7 @@ describe("DesktopLinuxUrlHandler", () => {
   it("renders a scheme-handler desktop entry with freedesktop Exec quoting", () => {
     const entry = DesktopLinuxUrlHandler.renderUrlHandlerDesktopEntry({
       displayName: "Backplane (Nightly)",
-      execTarget: '/home/al ice/Apps/T3 "100%" $HOME\\x.AppImage',
+      execTarget: '/home/al ice/Apps/Backplane "100%" $HOME\\x.AppImage',
       scheme: "backplane",
     });
 
@@ -117,7 +117,7 @@ describe("DesktopLinuxUrlHandler", () => {
     // backslashes plus the sign.
     assert.include(
       entry,
-      'Exec="/home/al ice/Apps/T3 \\\\"100%%\\\\" \\\\$HOME\\\\\\\\x.AppImage" %U',
+      'Exec="/home/al ice/Apps/Backplane \\\\"100%%\\\\" \\\\$HOME\\\\\\\\x.AppImage" %U',
     );
     assert.include(entry, "NoDisplay=true");
     assert.notInclude(entry, "StartupWMClass=");
@@ -165,7 +165,7 @@ describe("DesktopLinuxUrlHandler", () => {
       );
       assert.include(
         recorded.files[0]?.content,
-        'Exec="/home/alice/Applications/T3-Code.AppImage" %U',
+        'Exec="/home/alice/Applications/Backplane.AppImage" %U',
       );
       assert.include(recorded.files[0]?.content, "MimeType=x-scheme-handler/backplane;");
       assert.deepEqual(recorded.commands, [

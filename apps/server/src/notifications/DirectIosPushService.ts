@@ -1,9 +1,9 @@
 import {
   IosNotificationRegistration,
   type IosNotificationRegistrationResult,
-} from "@t3tools/contracts";
-import { projectThreadAwareness } from "@t3tools/shared/agentAwareness";
-import { makeDrainableWorker } from "@t3tools/shared/DrainableWorker";
+} from "@backplane/contracts";
+import { projectThreadAwareness } from "@backplane/shared/agentAwareness";
+import { makeDrainableWorker } from "@backplane/shared/DrainableWorker";
 import * as Config from "effect/Config";
 import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
@@ -55,7 +55,7 @@ export class DirectIosPushService extends Context.Service<
       input: typeof IosNotificationRegistration.Type,
     ) => Effect.Effect<typeof IosNotificationRegistrationResult.Type, DirectIosPushError>;
   }
->()("t3/notifications/DirectIosPushService") {}
+>()("@backplane/server/notifications/DirectIosPushService") {}
 
 export const layer = Layer.effect(
   DirectIosPushService,
@@ -70,10 +70,12 @@ export const layer = Layer.effect(
       ? yield* decodeApnsConfig(new TextDecoder().decode(storedConfig.value))
       : { teamId: "", keyId: "", bundleId: "com.i2cjak.k3eda", keyPath: "" };
     const config = yield* Config.all({
-      teamId: Config.string("T3CODE_APNS_TEAM_ID").pipe(Config.withDefault(defaults.teamId)),
-      keyId: Config.string("T3CODE_APNS_KEY_ID").pipe(Config.withDefault(defaults.keyId)),
-      bundleId: Config.string("T3CODE_APNS_BUNDLE_ID").pipe(Config.withDefault(defaults.bundleId)),
-      keyPath: Config.string("T3CODE_APNS_PRIVATE_KEY_PATH").pipe(
+      teamId: Config.string("BACKPLANE_APNS_TEAM_ID").pipe(Config.withDefault(defaults.teamId)),
+      keyId: Config.string("BACKPLANE_APNS_KEY_ID").pipe(Config.withDefault(defaults.keyId)),
+      bundleId: Config.string("BACKPLANE_APNS_BUNDLE_ID").pipe(
+        Config.withDefault(defaults.bundleId),
+      ),
+      keyPath: Config.string("BACKPLANE_APNS_PRIVATE_KEY_PATH").pipe(
         Config.withDefault(defaults.keyPath),
       ),
     });

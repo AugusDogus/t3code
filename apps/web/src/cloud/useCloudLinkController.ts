@@ -1,10 +1,10 @@
 import { useAuth } from "@clerk/react";
-import { findErrorTraceId } from "@t3tools/client-runtime/errors";
+import { findErrorTraceId } from "@backplane/client-runtime/errors";
 import {
   isAtomCommandInterrupted,
   settlePromise,
   squashAtomCommandFailure,
-} from "@t3tools/client-runtime/state/runtime";
+} from "@backplane/client-runtime/state/runtime";
 import { useState } from "react";
 
 import { toastManager } from "../components/ui/toast";
@@ -53,7 +53,7 @@ export function useCloudLinkController() {
   const reportUpdateFailure = (cause: unknown) => {
     const message = cause instanceof Error ? cause.message : "Could not update T3 Connect access.";
     const traceId = findErrorTraceId(cause);
-    console.error("[t3-connect] Could not update T3 Connect", { message, traceId, cause });
+    console.error("[backplane-connect] Could not update T3 Connect", { message, traceId, cause });
     setOperationError(traceId ? `${message} Trace ID: ${traceId}` : message);
     toastManager.add({
       type: "error",

@@ -16,8 +16,8 @@ import * as Stream from "effect/Stream";
 import * as TestClock from "effect/testing/TestClock";
 import { ChildProcess, ChildProcessSpawner } from "effect/unstable/process";
 
-import { HostProcessPlatform } from "@t3tools/shared/hostProcess";
-import { SpawnExecutableResolution } from "@t3tools/shared/shell";
+import { HostProcessPlatform } from "@backplane/shared/hostProcess";
+import { SpawnExecutableResolution } from "@backplane/shared/shell";
 import * as ExternalLauncher from "./externalLauncher.ts";
 
 // Tests below write `#!/bin/sh` stubs into a real temp dir and hand that
@@ -125,7 +125,7 @@ it.effect("launches an installed editor with platform-safe arguments", () =>
   Effect.gen(function* () {
     const fileSystem = yield* FileSystem.FileSystem;
     const path = yield* Path.Path;
-    const binDir = yield* fileSystem.makeTempDirectoryScoped({ prefix: "t3-editors-" });
+    const binDir = yield* fileSystem.makeTempDirectoryScoped({ prefix: "backplane-editors-" });
     yield* fileSystem.writeFileString(path.join(binDir, "code.CMD"), "@echo off\r\n");
 
     let spawned: ChildProcess.StandardCommand | undefined;
@@ -163,7 +163,7 @@ it.effect.skipIf(windowsHost)("reveals a file in Finder with open -R on macOS", 
   Effect.gen(function* () {
     const fileSystem = yield* FileSystem.FileSystem;
     const path = yield* Path.Path;
-    const binDir = yield* fileSystem.makeTempDirectoryScoped({ prefix: "t3-editors-" });
+    const binDir = yield* fileSystem.makeTempDirectoryScoped({ prefix: "backplane-editors-" });
     const openPath = path.join(binDir, "open");
     yield* fileSystem.writeFileString(openPath, "#!/bin/sh\n");
     yield* fileSystem.chmod(openPath, 0o755);
@@ -198,7 +198,7 @@ it.effect("reveals a file in File Explorer through PowerShell on Windows", () =>
   Effect.gen(function* () {
     const fileSystem = yield* FileSystem.FileSystem;
     const path = yield* Path.Path;
-    const binDir = yield* fileSystem.makeTempDirectoryScoped({ prefix: "t3-editors-" });
+    const binDir = yield* fileSystem.makeTempDirectoryScoped({ prefix: "backplane-editors-" });
     yield* fileSystem.writeFileString(path.join(binDir, "explorer.CMD"), "@echo off\r\n");
     // resolvePowerShellPath builds `${SYSTEMROOT}\System32\...` with Windows
     // separators, which on the posix test filesystem is one file name.
@@ -258,12 +258,12 @@ it.effect("reveals a file in File Explorer through PowerShell on Windows", () =>
 // single `/select,"<path>"` switch. Mock argv assertions cannot prove this —
 // only Windows' own PowerShell -> CreateProcess quoting chain can, so the
 // test runs only where that chain exists.
-// oxlint-disable-next-line t3code/no-global-process-runtime -- the skip decision needs the real host platform, outside any Effect runtime.
+// oxlint-disable-next-line backplane/no-global-process-runtime -- the skip decision needs the real host platform, outside any Effect runtime.
 it.skipIf(process.platform !== "win32")(
   "delivers the raw /select switch for spaced paths through real PowerShell",
   { timeout: 60_000 },
   async () => {
-    const tempDir = NodeFS.mkdtempSync(NodePath.join(NodeOS.tmpdir(), "t3-reveal-smoke-"));
+    const tempDir = NodeFS.mkdtempSync(NodePath.join(NodeOS.tmpdir(), "backplane-reveal-smoke-"));
     try {
       const recorderPath = NodePath.join(tempDir, "recorder.cmd");
       const outputPath = NodePath.join(tempDir, "argv.txt");
@@ -313,7 +313,7 @@ it.effect("does not advertise reveal on Windows when PowerShell is missing", () 
   Effect.gen(function* () {
     const fileSystem = yield* FileSystem.FileSystem;
     const path = yield* Path.Path;
-    const binDir = yield* fileSystem.makeTempDirectoryScoped({ prefix: "t3-editors-" });
+    const binDir = yield* fileSystem.makeTempDirectoryScoped({ prefix: "backplane-editors-" });
     yield* fileSystem.writeFileString(path.join(binDir, "explorer.CMD"), "@echo off\r\n");
 
     const result = yield* Effect.gen(function* () {
@@ -348,7 +348,7 @@ it.effect.skipIf(windowsHost)(
     Effect.gen(function* () {
       const fileSystem = yield* FileSystem.FileSystem;
       const path = yield* Path.Path;
-      const binDir = yield* fileSystem.makeTempDirectoryScoped({ prefix: "t3-editors-" });
+      const binDir = yield* fileSystem.makeTempDirectoryScoped({ prefix: "backplane-editors-" });
       for (const name of ["explorer.exe", "powershell.exe", "xdg-open"]) {
         const filePath = path.join(binDir, name);
         yield* fileSystem.writeFileString(filePath, "#!/bin/sh\n");
@@ -403,7 +403,7 @@ it.effect.skipIf(windowsHost)(
     Effect.gen(function* () {
       const fileSystem = yield* FileSystem.FileSystem;
       const path = yield* Path.Path;
-      const binDir = yield* fileSystem.makeTempDirectoryScoped({ prefix: "t3-editors-" });
+      const binDir = yield* fileSystem.makeTempDirectoryScoped({ prefix: "backplane-editors-" });
       const explorerPath = path.join(binDir, "explorer.exe");
       yield* fileSystem.writeFileString(explorerPath, "");
       yield* fileSystem.chmod(explorerPath, 0o755);
@@ -441,7 +441,7 @@ it.effect.skipIf(windowsHost)(
     Effect.gen(function* () {
       const fileSystem = yield* FileSystem.FileSystem;
       const path = yield* Path.Path;
-      const binDir = yield* fileSystem.makeTempDirectoryScoped({ prefix: "t3-editors-" });
+      const binDir = yield* fileSystem.makeTempDirectoryScoped({ prefix: "backplane-editors-" });
       for (const name of ["explorer.exe", "xdg-open", "xdg-mime"]) {
         const filePath = path.join(binDir, name);
         yield* fileSystem.writeFileString(filePath, "#!/bin/sh\n");
@@ -496,7 +496,7 @@ it.effect.skipIf(windowsHost)(
     Effect.gen(function* () {
       const fileSystem = yield* FileSystem.FileSystem;
       const path = yield* Path.Path;
-      const binDir = yield* fileSystem.makeTempDirectoryScoped({ prefix: "t3-editors-" });
+      const binDir = yield* fileSystem.makeTempDirectoryScoped({ prefix: "backplane-editors-" });
       for (const name of ["xdg-open", "xdg-mime"]) {
         const filePath = path.join(binDir, name);
         yield* fileSystem.writeFileString(filePath, "#!/bin/sh\n");
@@ -549,7 +549,7 @@ it.effect.skipIf(windowsHost)(
     Effect.gen(function* () {
       const fileSystem = yield* FileSystem.FileSystem;
       const path = yield* Path.Path;
-      const binDir = yield* fileSystem.makeTempDirectoryScoped({ prefix: "t3-editors-" });
+      const binDir = yield* fileSystem.makeTempDirectoryScoped({ prefix: "backplane-editors-" });
       for (const name of ["explorer.exe", "powershell.exe"]) {
         const filePath = path.join(binDir, name);
         yield* fileSystem.writeFileString(filePath, "#!/bin/sh\n");
@@ -592,7 +592,7 @@ it.effect.skipIf(windowsHost)("reveals by opening the containing directory on Li
   Effect.gen(function* () {
     const fileSystem = yield* FileSystem.FileSystem;
     const path = yield* Path.Path;
-    const binDir = yield* fileSystem.makeTempDirectoryScoped({ prefix: "t3-editors-" });
+    const binDir = yield* fileSystem.makeTempDirectoryScoped({ prefix: "backplane-editors-" });
     for (const name of ["xdg-open", "xdg-mime"]) {
       const filePath = path.join(binDir, name);
       yield* fileSystem.writeFileString(filePath, "#!/bin/sh\n");
@@ -633,7 +633,7 @@ it.effect.skipIf(windowsHost)(
     Effect.gen(function* () {
       const fileSystem = yield* FileSystem.FileSystem;
       const path = yield* Path.Path;
-      const binDir = yield* fileSystem.makeTempDirectoryScoped({ prefix: "t3-editors-" });
+      const binDir = yield* fileSystem.makeTempDirectoryScoped({ prefix: "backplane-editors-" });
       const xdgOpenPath = path.join(binDir, "xdg-open");
       yield* fileSystem.writeFileString(xdgOpenPath, "#!/bin/sh\n");
       yield* fileSystem.chmod(xdgOpenPath, 0o755);
@@ -653,7 +653,7 @@ it.effect.skipIf(windowsHost)(
     Effect.gen(function* () {
       const fileSystem = yield* FileSystem.FileSystem;
       const path = yield* Path.Path;
-      const binDir = yield* fileSystem.makeTempDirectoryScoped({ prefix: "t3-editors-" });
+      const binDir = yield* fileSystem.makeTempDirectoryScoped({ prefix: "backplane-editors-" });
       for (const name of ["xdg-open", "xdg-mime"]) {
         const filePath = path.join(binDir, name);
         yield* fileSystem.writeFileString(filePath, "#!/bin/sh\n");
@@ -696,7 +696,7 @@ it.effect.skipIf(windowsHost)(
     Effect.gen(function* () {
       const fileSystem = yield* FileSystem.FileSystem;
       const path = yield* Path.Path;
-      const binDir = yield* fileSystem.makeTempDirectoryScoped({ prefix: "t3-editors-" });
+      const binDir = yield* fileSystem.makeTempDirectoryScoped({ prefix: "backplane-editors-" });
       for (const name of ["xdg-open", "xdg-mime"]) {
         const filePath = path.join(binDir, name);
         yield* fileSystem.writeFileString(filePath, "#!/bin/sh\n");
@@ -726,7 +726,7 @@ it.effect.skipIf(windowsHost)(
     Effect.gen(function* () {
       const fileSystem = yield* FileSystem.FileSystem;
       const path = yield* Path.Path;
-      const binDir = yield* fileSystem.makeTempDirectoryScoped({ prefix: "t3-editors-" });
+      const binDir = yield* fileSystem.makeTempDirectoryScoped({ prefix: "backplane-editors-" });
       for (const name of ["xdg-open", "xdg-mime"]) {
         const filePath = path.join(binDir, name);
         yield* fileSystem.writeFileString(filePath, "#!/bin/sh\n");
@@ -761,7 +761,7 @@ it.live.skipIf(windowsHost)("a stalled handler probe drops only the file manager
   Effect.gen(function* () {
     const fileSystem = yield* FileSystem.FileSystem;
     const path = yield* Path.Path;
-    const binDir = yield* fileSystem.makeTempDirectoryScoped({ prefix: "t3-editors-" });
+    const binDir = yield* fileSystem.makeTempDirectoryScoped({ prefix: "backplane-editors-" });
     for (const name of ["xdg-open", "xdg-mime", "code"]) {
       const filePath = path.join(binDir, name);
       yield* fileSystem.writeFileString(filePath, "#!/bin/sh\n");
@@ -792,7 +792,7 @@ it.effect.skipIf(windowsHost)(
     Effect.gen(function* () {
       const fileSystem = yield* FileSystem.FileSystem;
       const path = yield* Path.Path;
-      const binDir = yield* fileSystem.makeTempDirectoryScoped({ prefix: "t3-editors-" });
+      const binDir = yield* fileSystem.makeTempDirectoryScoped({ prefix: "backplane-editors-" });
       const xdgOpenPath = path.join(binDir, "xdg-open");
       yield* fileSystem.writeFileString(xdgOpenPath, "#!/bin/sh\n");
       yield* fileSystem.chmod(xdgOpenPath, 0o755);
@@ -812,7 +812,7 @@ it.effect("discovers editors through the service API", () =>
   Effect.gen(function* () {
     const fileSystem = yield* FileSystem.FileSystem;
     const path = yield* Path.Path;
-    const binDir = yield* fileSystem.makeTempDirectoryScoped({ prefix: "t3-editors-" });
+    const binDir = yield* fileSystem.makeTempDirectoryScoped({ prefix: "backplane-editors-" });
     yield* fileSystem.writeFileString(path.join(binDir, "code.CMD"), "@echo off\r\n");
     yield* fileSystem.writeFileString(path.join(binDir, "explorer.CMD"), "@echo off\r\n");
 
@@ -882,7 +882,7 @@ it.effect("memoizes editor discovery and refreshes after the cache window", () =
         ConfigProvider.layer(
           ConfigProvider.fromEnv({
             env: {
-              PATH: "C:\\t3-editor-discovery-cache-test",
+              PATH: "C:\\backplane-editor-discovery-cache-test",
               PATHEXT: ".COM;.EXE;.BAT;.CMD",
             },
           }),
@@ -947,7 +947,7 @@ it.effect("rescans after an interrupted discovery instead of caching the interru
         ConfigProvider.layer(
           ConfigProvider.fromEnv({
             env: {
-              PATH: "C:\\t3-editor-discovery-interrupt-test",
+              PATH: "C:\\backplane-editor-discovery-interrupt-test",
               PATHEXT: ".COM;.EXE;.BAT;.CMD",
             },
           }),

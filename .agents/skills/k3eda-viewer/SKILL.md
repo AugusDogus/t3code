@@ -40,7 +40,7 @@ Use existing outputs where possible. If none exist, generate **review-only** Ger
 
 Open **KiCad** from the thread's right-panel add menu. The four views are **GERBERs**, **PCB**, **Schematic**, and **3D model**. Select a file or Gerber layer inside the view. Saved-file changes refresh automatically while visible; **Refresh saved files** forces a reread. A changed `.k3eda.json` updates the default selection.
 
-For model interaction, use the panel's **Open KiCad viewer in browser** action. It opens the same viewer in T3's collaborative browser, where `preview_status`, `preview_snapshot`, `preview_click`, `preview_scroll`, and `preview_press` work. Target that viewer's `tabId` explicitly so other browser tabs stay intact. The panel iframe itself is not a `preview_*` automation target. If no viewer browser tab exists and only browser tools are available, ask the user to open that action once; do not invent a token or navigate to a bare viewer URL.
+For model interaction, use the panel's **Open KiCad viewer in browser** action. It opens the same viewer in Backplane's collaborative browser, where `preview_status`, `preview_snapshot`, `preview_click`, `preview_scroll`, and `preview_press` work. Target that viewer's `tabId` explicitly so other browser tabs stay intact. The panel iframe itself is not a `preview_*` automation target. If no viewer browser tab exists and only browser tools are available, ask the user to open that action once; do not invent a token or navigate to a bare viewer URL.
 
 Take a snapshot before clicking. Outer view tabs and file/layer selectors have accessible names; Prism canvas geometry may need screenshot coordinates. The Gerber view supports pan, zoom, and fit. Use Previous/Next or left/right arrows to flip layers; inspection presets combine copper or front/back placement layers from the same fabrication set. PCB and schematic support reference/net search and **Show in schematic/PCB** after selecting a component. Double-click cross-probe actions from Prism also navigate to the matching view. Browser tooling can inspect open shadow roots for the PCB/schematic controls.
 
@@ -50,8 +50,8 @@ Viewer links grant temporary, read-only access to one workspace. Do not commit o
 
 - Empty/wrong project: check the thread's worktree root and `.k3eda.json`; paths outside that root and symlinks are not followed.
 - Stale view: save the editor file, refresh, and check the selected board/layer. Existing Gerbers change only when regenerated; native PCB edits do not rewrite a fabrication package.
-- 3D: the environment running T3 needs `kicad-cli` with GLB export and access to the board's model libraries. Preview GLBs are generated in an isolated temporary cache. STEP/VRML component files are not themselves the board view.
-- Gerbers: rendering uses Prism's original fabrication renderer and requires `python3` on the T3 environment. `.gbrjob` is a manifest, not a drawable layer. A malformed or empty layer is reported as such; do not claim a successful render.
+- 3D: the environment running Backplane needs `kicad-cli` with GLB export and access to the board's model libraries. Preview GLBs are generated in an isolated temporary cache. STEP/VRML component files are not themselves the board view.
+- Gerbers: rendering uses Prism's original fabrication renderer and requires `python3` on the Backplane environment. `.gbrjob` is a manifest, not a drawable layer. A malformed or empty layer is reported as such; do not claim a successful render.
 
 For richer project review artifacts, the optional `scripts/cruncher_review.py`
 helper runs the documented `kicad-cruncher design` command (and optionally

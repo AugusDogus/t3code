@@ -18,7 +18,7 @@ Use the Node.js version in `package.json` and [Vite+](https://viteplus.dev/guide
 git clone https://github.com/i2cjak/Backplane.git
 cd Backplane
 vp install
-vp run dev --home-dir .t3
+vp run dev --home-dir .backplane
 ```
 
 Open the pairing URL printed by the development server. Source builds use your local KiCad installation unless a Backplane runtime is configured. Viewer-tab changes are tracked separately from the app's release and appearance work.

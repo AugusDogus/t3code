@@ -79,9 +79,9 @@ function makeEnvironmentLayer(
         NodeServices.layer,
         DesktopConfig.layerTest({
           ...(options?.implicitBaseDir ? {} : { BACKPLANE_HOME: baseDir }),
-          T3CODE_PORT: "9999",
-          T3CODE_MODE: "desktop",
-          T3CODE_DESKTOP_LAN_HOST: "192.168.1.50",
+          BACKPLANE_PORT: "9999",
+          BACKPLANE_MODE: "desktop",
+          BACKPLANE_DESKTOP_LAN_HOST: "192.168.1.50",
           VITE_DEV_SERVER_URL: options?.devServerUrl,
         }),
       ),
@@ -126,7 +126,7 @@ const withHarness = <A, E, R>(
   Effect.gen(function* () {
     const fileSystem = yield* FileSystem.FileSystem;
     const baseDir = yield* fileSystem.makeTempDirectoryScoped({
-      prefix: "t3-desktop-backend-config-test-",
+      prefix: "backplane-desktop-backend-config-test-",
     });
 
     return yield* effect.pipe(
@@ -173,7 +173,7 @@ const withPackagedWslHarness = <A, E, R>(
     const fileSystem = yield* FileSystem.FileSystem;
     const path = yield* Path.Path;
     const baseDir = yield* fileSystem.makeTempDirectoryScoped({
-      prefix: "t3-desktop-backend-config-test-",
+      prefix: "backplane-desktop-backend-config-test-",
     });
     const archivePath = path.join(baseDir, "wsl-runtime.tar.gz");
     const hashPath = `${archivePath}.sha256`;
@@ -249,10 +249,10 @@ describe("DesktopBackendConfiguration", () => {
         assert.equal(first.cwd, environment.backendCwd);
         assert.equal(first.captureOutput, true);
         assert.equal(first.env.ELECTRON_RUN_AS_NODE, "1");
-        assert.isUndefined(first.env.T3CODE_PORT);
-        assert.isUndefined(first.env.T3CODE_MODE);
-        assert.isUndefined(first.env.T3CODE_DESKTOP_LAN_HOST);
-        assert.equal(first.env.T3CODE_HOME, environment.baseDir);
+        assert.isUndefined(first.env.BACKPLANE_PORT);
+        assert.isUndefined(first.env.BACKPLANE_MODE);
+        assert.isUndefined(first.env.BACKPLANE_DESKTOP_LAN_HOST);
+        assert.equal(first.env.BACKPLANE_HOME, environment.baseDir);
         assert.equal(first.env.BACKPLANE_KICAD_ROOT, "/missing/resources/kicad");
         assert.equal(first.env.BACKPLANE_PYTHON, "/missing/resources/python/bin/python3");
 
@@ -260,7 +260,7 @@ describe("DesktopBackendConfiguration", () => {
         assert.equal(first.bootstrap.noBrowser, true);
         assert.equal(first.bootstrap.port, 4888);
         assert.equal(first.bootstrap.host, "0.0.0.0");
-        assert.equal(first.bootstrap.t3Home, environment.baseDir);
+        assert.equal(first.bootstrap.backplaneHome, environment.baseDir);
         assert.equal(first.bootstrap.tailscaleServeEnabled, true);
         assert.equal(first.bootstrap.tailscaleServePort, 8443);
         assert.match(first.bootstrap.desktopBootstrapToken, /^[0-9a-f]{48}$/i);
@@ -286,7 +286,7 @@ describe("DesktopBackendConfiguration", () => {
       Effect.gen(function* () {
         const configuration = yield* DesktopBackendConfiguration.DesktopBackendConfiguration;
         const config = yield* configuration.resolvePrimary;
-        assert.isUndefined(config.env.T3CODE_HOME);
+        assert.isUndefined(config.env.BACKPLANE_HOME);
       }),
       { isPackaged: false, devServerUrl: "http://127.0.0.1:5733", implicitBaseDir: true },
     ),
@@ -299,7 +299,7 @@ describe("DesktopBackendConfiguration", () => {
         const configuration = yield* DesktopBackendConfiguration.DesktopBackendConfiguration;
         const config = yield* configuration.resolvePrimary;
         assert.equal(environment.stateDir, `${environment.baseDir}/userdata`);
-        assert.equal(config.env.T3CODE_HOME, environment.baseDir);
+        assert.equal(config.env.BACKPLANE_HOME, environment.baseDir);
       }),
       { isPackaged: false, devServerUrl: "http://127.0.0.1:5733" },
     ),
@@ -333,7 +333,7 @@ describe("DesktopBackendConfiguration", () => {
       const fileSystem = yield* FileSystem.FileSystem;
       const path = yield* Path.Path;
       const baseDir = yield* fileSystem.makeTempDirectoryScoped({
-        prefix: "t3-desktop-backend-config-test-",
+        prefix: "backplane-desktop-backend-config-test-",
       });
       const resourcesPath = path.join(baseDir, "resources");
 
@@ -392,7 +392,7 @@ describe("DesktopBackendConfiguration", () => {
       const fileSystem = yield* FileSystem.FileSystem;
       const path = yield* Path.Path;
       const baseDir = yield* fileSystem.makeTempDirectoryScoped({
-        prefix: "t3-desktop-backend-config-test-",
+        prefix: "backplane-desktop-backend-config-test-",
       });
       const entryPath = path.join(baseDir, "apps/server/dist/bin.mjs");
       yield* fileSystem.makeDirectory(path.dirname(entryPath), { recursive: true });
@@ -455,7 +455,7 @@ describe("DesktopBackendConfiguration", () => {
     }> = [];
     const observedNodePtyRoots: string[] = [];
     let legacyCleanupCount = 0;
-    const linuxAppRoot = "/home/test/.t3/wsl-runtime/1.2.3-x64";
+    const linuxAppRoot = "/home/test/.backplane/wsl-runtime/1.2.3-x64";
 
     return withPackagedWslHarness(
       {
@@ -572,7 +572,7 @@ describe("DesktopBackendConfiguration", () => {
 
   it.effect("resolveWsl retires a staged runtime that cannot load node-pty", () => {
     const archiveHash = "c".repeat(64);
-    const stagedAppRoot = `/home/test/.t3/wsl-runtime/sha256-${archiveHash}`;
+    const stagedAppRoot = `/home/test/.backplane/wsl-runtime/sha256-${archiveHash}`;
     const observedNodePtyRoots: string[] = [];
     const invalidatedRuntimeIds: string[] = [];
     return withPackagedWslHarness(
@@ -608,7 +608,7 @@ describe("DesktopBackendConfiguration", () => {
   });
 
   it.effect("resolveWsl keeps the staged runtime when the mounted tree fails too", () => {
-    const stagedAppRoot = "/home/test/.t3/wsl-runtime/cache";
+    const stagedAppRoot = "/home/test/.backplane/wsl-runtime/cache";
     const invalidatedRuntimeIds: string[] = [];
     return withPackagedWslHarness(
       {
@@ -643,7 +643,7 @@ describe("DesktopBackendConfiguration", () => {
   });
 
   it.effect("resolveWsl keeps WSL retryable when the mounted fallback fails transiently", () => {
-    const stagedAppRoot = "/home/test/.t3/wsl-runtime/cache";
+    const stagedAppRoot = "/home/test/.backplane/wsl-runtime/cache";
     const invalidatedRuntimeIds: string[] = [];
     return withPackagedWslHarness(
       {
@@ -688,7 +688,7 @@ describe("DesktopBackendConfiguration", () => {
         wsl: () => ({
           prepareRuntime: () => ({
             ok: true,
-            linuxAppRoot: "/home/test/.t3/wsl-runtime/cache",
+            linuxAppRoot: "/home/test/.backplane/wsl-runtime/cache",
           }),
           invalidateRuntime: (_distro, runtimeId) =>
             Effect.sync(() => {
@@ -723,14 +723,14 @@ describe("DesktopBackendConfiguration", () => {
         const fileSystem = yield* FileSystem.FileSystem;
         const path = yield* Path.Path;
         const baseDir = yield* fileSystem.makeTempDirectoryScoped({
-          prefix: "t3-desktop-backend-config-test-",
+          prefix: "backplane-desktop-backend-config-test-",
         });
         const entryPath = path.join(baseDir, "apps/server/dist/bin.mjs");
         yield* fileSystem.makeDirectory(path.dirname(entryPath), { recursive: true });
         yield* fileSystem.writeFileString(entryPath, "");
 
         const nodePath = "/home/test user's/.nvm/versions/node/v22.0.0/bin/node";
-        const linuxAppRoot = "/tmp/t3 code's launch";
+        const linuxAppRoot = "/tmp/backplane's launch";
         const linuxEntryPath = `${linuxAppRoot}/apps/server/dist/bin.mjs`;
         const resolvedPath = "/home/test user/bin:/opt/test's tools/bin:/usr/bin:/bin";
         const devServerUrl = "http://127.0.0.1:5733/dev%20assets/?label=hello%20world";
@@ -772,7 +772,6 @@ describe("DesktopBackendConfiguration", () => {
           "--exec",
           "env",
           "PATH=/home/test user's/.nvm/versions/node/v22.0.0/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/test user/bin:/opt/test's tools/bin:/usr/bin:/bin",
-          "T3CODE_HOME=",
           "BACKPLANE_HOME=",
           nodePath,
           linuxEntryPath,
@@ -852,7 +851,7 @@ describe("DesktopBackendConfiguration", () => {
       const fileSystem = yield* FileSystem.FileSystem;
       const path = yield* Path.Path;
       const baseDir = yield* fileSystem.makeTempDirectoryScoped({
-        prefix: "t3-desktop-backend-config-test-",
+        prefix: "backplane-desktop-backend-config-test-",
       });
       const settingsPath = path.join(baseDir, "userdata", "settings.json");
       const cause = PlatformError.systemError({
@@ -911,7 +910,7 @@ describe("DesktopBackendConfiguration", () => {
     Effect.gen(function* () {
       const fileSystem = yield* FileSystem.FileSystem;
       const baseDir = yield* fileSystem.makeTempDirectoryScoped({
-        prefix: "t3-desktop-backend-config-test-",
+        prefix: "backplane-desktop-backend-config-test-",
       });
 
       yield* Effect.gen(function* () {
@@ -941,7 +940,7 @@ describe("DesktopBackendConfiguration", () => {
     Effect.gen(function* () {
       const fileSystem = yield* FileSystem.FileSystem;
       const baseDir = yield* fileSystem.makeTempDirectoryScoped({
-        prefix: "t3-desktop-backend-config-test-",
+        prefix: "backplane-desktop-backend-config-test-",
       });
 
       const previousWslEnv = process.env.WSLENV;
@@ -961,7 +960,7 @@ describe("DesktopBackendConfiguration", () => {
           // Binds to 0.0.0.0 inside WSL so the backend is reachable via
           // both wslhost-forwarded localhost and the distro's eth0 IP.
           assert.equal(config.bootstrap.host, "0.0.0.0");
-          assert.equal(config.bootstrap.t3Home, "~/.backplane");
+          assert.equal(config.bootstrap.backplaneHome, "~/.backplane");
           assert.equal(config.bootstrap.tailscaleServeEnabled, false);
           assert.notProperty(config.bootstrap, "desktopTelemetryFd");
           assert.notProperty(config.bootstrap, "resourceMonitorPath");
@@ -1010,7 +1009,7 @@ describe("DesktopBackendConfiguration", () => {
       Effect.gen(function* () {
         const fileSystem = yield* FileSystem.FileSystem;
         const baseDir = yield* fileSystem.makeTempDirectoryScoped({
-          prefix: "t3-desktop-backend-config-test-",
+          prefix: "backplane-desktop-backend-config-test-",
         });
 
         yield* Effect.gen(function* () {
@@ -1022,7 +1021,7 @@ describe("DesktopBackendConfiguration", () => {
           // not spawn wsl.exe (which would loop on preflight failures while the
           // Connections backend control is hidden). Resolve the Windows primary.
           assert.equal(config.executablePath, process.execPath);
-          assert.equal(config.bootstrap.t3Home, environment.baseDir);
+          assert.equal(config.bootstrap.backplaneHome, environment.baseDir);
           assert.isTrue(Option.isNone(config.preflightFailure));
         }).pipe(
           Effect.provide(
@@ -1050,7 +1049,7 @@ describe("DesktopBackendConfiguration", () => {
       Effect.gen(function* () {
         const fileSystem = yield* FileSystem.FileSystem;
         const baseDir = yield* fileSystem.makeTempDirectoryScoped({
-          prefix: "t3-desktop-backend-config-test-",
+          prefix: "backplane-desktop-backend-config-test-",
         });
 
         yield* Effect.gen(function* () {
@@ -1091,7 +1090,7 @@ describe("DesktopBackendConfiguration", () => {
     Effect.gen(function* () {
       const fileSystem = yield* FileSystem.FileSystem;
       const baseDir = yield* fileSystem.makeTempDirectoryScoped({
-        prefix: "t3-desktop-backend-config-test-",
+        prefix: "backplane-desktop-backend-config-test-",
       });
 
       yield* Effect.gen(function* () {
@@ -1127,7 +1126,7 @@ describe("DesktopBackendConfiguration", () => {
     Effect.gen(function* () {
       const fileSystem = yield* FileSystem.FileSystem;
       const baseDir = yield* fileSystem.makeTempDirectoryScoped({
-        prefix: "t3-desktop-backend-config-test-",
+        prefix: "backplane-desktop-backend-config-test-",
       });
 
       yield* Effect.gen(function* () {
@@ -1160,7 +1159,7 @@ describe("DesktopBackendConfiguration", () => {
     Effect.gen(function* () {
       const fileSystem = yield* FileSystem.FileSystem;
       const baseDir = yield* fileSystem.makeTempDirectoryScoped({
-        prefix: "t3-desktop-backend-config-test-",
+        prefix: "backplane-desktop-backend-config-test-",
       });
 
       yield* Effect.gen(function* () {
@@ -1202,7 +1201,7 @@ describe("DesktopBackendConfiguration", () => {
     Effect.gen(function* () {
       const fileSystem = yield* FileSystem.FileSystem;
       const baseDir = yield* fileSystem.makeTempDirectoryScoped({
-        prefix: "t3-desktop-backend-config-test-",
+        prefix: "backplane-desktop-backend-config-test-",
       });
 
       yield* Effect.gen(function* () {
@@ -1235,7 +1234,7 @@ describe("DesktopBackendConfiguration", () => {
     Effect.gen(function* () {
       const fileSystem = yield* FileSystem.FileSystem;
       const baseDir = yield* fileSystem.makeTempDirectoryScoped({
-        prefix: "t3-desktop-backend-config-test-",
+        prefix: "backplane-desktop-backend-config-test-",
       });
 
       yield* Effect.gen(function* () {
@@ -1268,12 +1267,12 @@ describe("DesktopBackendConfiguration", () => {
       const fileSystem = yield* FileSystem.FileSystem;
       const path = yield* Path.Path;
       const baseDir = yield* fileSystem.makeTempDirectoryScoped({
-        prefix: "t3-desktop-backend-config-test-",
+        prefix: "backplane-desktop-backend-config-test-",
       });
       const resourcesPath = path.join(baseDir, "resources");
       const dirname = `${resourcesPath}/app.asar/apps/desktop/dist-electron`;
-      const embeddedMonitorPath = `${resourcesPath}/app.asar/apps/desktop/prod-resources/resource-monitor/t3-resource-monitor`;
-      const monitorPath = path.join(resourcesPath, "resource-monitor/t3-resource-monitor");
+      const embeddedMonitorPath = `${resourcesPath}/app.asar/apps/desktop/prod-resources/resource-monitor/backplane-resource-monitor`;
+      const monitorPath = path.join(resourcesPath, "resource-monitor/backplane-resource-monitor");
       yield* fileSystem.makeDirectory(
         `${resourcesPath}/app.asar/apps/desktop/prod-resources/resource-monitor`,
         { recursive: true },
@@ -1317,16 +1316,16 @@ describe("DesktopBackendConfiguration", () => {
       const fileSystem = yield* FileSystem.FileSystem;
       const path = yield* Path.Path;
       const baseDir = yield* fileSystem.makeTempDirectoryScoped({
-        prefix: "t3-desktop-backend-config-test-",
+        prefix: "backplane-desktop-backend-config-test-",
       });
       const dirname = path.join(baseDir, "apps/desktop/src");
       const releaseMonitorPath = path.join(
         baseDir,
-        "native/resource-monitor/target/release/t3-resource-monitor",
+        "native/resource-monitor/target/release/backplane-resource-monitor",
       );
       const debugMonitorPath = path.join(
         baseDir,
-        "native/resource-monitor/target/debug/t3-resource-monitor",
+        "native/resource-monitor/target/debug/backplane-resource-monitor",
       );
       yield* fileSystem.makeDirectory(path.dirname(releaseMonitorPath), { recursive: true });
       yield* fileSystem.makeDirectory(path.dirname(debugMonitorPath), { recursive: true });
@@ -1371,7 +1370,7 @@ describe("DesktopBackendConfiguration", () => {
     Effect.gen(function* () {
       const fileSystem = yield* FileSystem.FileSystem;
       const baseDir = yield* fileSystem.makeTempDirectoryScoped({
-        prefix: "t3-desktop-backend-config-test-",
+        prefix: "backplane-desktop-backend-config-test-",
       });
 
       yield* Effect.gen(function* () {
@@ -1410,7 +1409,7 @@ describe("DesktopBackendConfiguration", () => {
     // a live async effect — otherwise runSync throws in the handler. Build the
     // real WSL layer (not the sync test stub) and resolve the label with a
     // top-level runSync, exactly as the handler does.
-    // oxlint-disable-next-line t3code/no-manual-effect-runtime-in-tests -- This test intentionally replicates the sync IPC handler's runSync path to catch a regression to async-only resolution; it.effect would mask it.
+    // oxlint-disable-next-line backplane/no-manual-effect-runtime-in-tests -- This test intentionally replicates the sync IPC handler's runSync path to catch a regression to async-only resolution; it.effect would mask it.
     const runtime = ManagedRuntime.make(
       DesktopBackendConfiguration.layer.pipe(
         Layer.provideMerge(serverExposureLayer),
@@ -1427,7 +1426,9 @@ describe("DesktopBackendConfiguration", () => {
             ),
           ),
         ),
-        Layer.provideMerge(makeEnvironmentLayer("/tmp/t3-wsl-isavailable", { platform: "win32" })),
+        Layer.provideMerge(
+          makeEnvironmentLayer("/tmp/backplane-wsl-isavailable", { platform: "win32" }),
+        ),
         Layer.provide(NodeServices.layer),
       ),
     );
@@ -1435,7 +1436,7 @@ describe("DesktopBackendConfiguration", () => {
       const configuration = await runtime.runPromise(
         DesktopBackendConfiguration.DesktopBackendConfiguration,
       );
-      // oxlint-disable-next-line t3code/no-manual-effect-runtime-in-tests -- Same reason: this is the synchronous resolution the IPC handler performs.
+      // oxlint-disable-next-line backplane/no-manual-effect-runtime-in-tests -- Same reason: this is the synchronous resolution the IPC handler performs.
       const label = Effect.runSync(configuration.resolvePrimaryLabel);
       assert.equal(typeof label, "string");
     } finally {

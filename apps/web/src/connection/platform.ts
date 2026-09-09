@@ -6,7 +6,7 @@ import {
   PrimaryEnvironmentAuth,
   RelayDeviceIdentity,
   SshEnvironmentGateway,
-} from "@t3tools/client-runtime/platform";
+} from "@backplane/client-runtime/platform";
 import {
   BearerConnectionCredential,
   BearerConnectionProfile,
@@ -20,18 +20,21 @@ import {
   PrimaryConnectionRegistration,
   PrimaryConnectionTarget,
   Wakeups,
-} from "@t3tools/client-runtime/connection";
-import { bootstrapRemoteBearerSession } from "@t3tools/client-runtime/authorization";
-import { fetchRemoteEnvironmentDescriptor } from "@t3tools/client-runtime/environment";
-import { managedRelayAccountChanges, managedRelaySessionAtom } from "@t3tools/client-runtime/relay";
-import { EnvironmentRpcRequestObserver } from "@t3tools/client-runtime/rpc";
+} from "@backplane/client-runtime/connection";
+import { bootstrapRemoteBearerSession } from "@backplane/client-runtime/authorization";
+import { fetchRemoteEnvironmentDescriptor } from "@backplane/client-runtime/environment";
+import {
+  managedRelayAccountChanges,
+  managedRelaySessionAtom,
+} from "@backplane/client-runtime/relay";
+import { EnvironmentRpcRequestObserver } from "@backplane/client-runtime/rpc";
 import {
   AuthStandardClientScopes,
   type DesktopBridge,
   type DesktopEnvironmentBootstrap,
   type DesktopSshEnvironmentTarget,
   PRIMARY_LOCAL_ENVIRONMENT_ID,
-} from "@t3tools/contracts";
+} from "@backplane/contracts";
 import * as Clock from "effect/Clock";
 import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
