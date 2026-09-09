@@ -138,7 +138,7 @@ it.layer(NodeServices.layer)("dev-runner", (it) => {
   });
 
   describe("createDevRunnerEnv", () => {
-    it.effect("leaves the shared home implicit and disables browser auto-open", () =>
+    it.effect("uses the isolated dev home and disables browser auto-open", () =>
       Effect.gen(function* () {
         const env = yield* createDevRunnerEnv({
           mode: "dev",
@@ -154,7 +154,9 @@ it.layer(NodeServices.layer)("dev-runner", (it) => {
           devUrl: undefined,
         });
 
-        assert.equal(env.T3CODE_HOME, undefined);
+        const path = yield* Path.Path;
+        assert.equal(env.T3CODE_HOME, path.join(NodeOS.homedir(), ".backplane", "dev"));
+        assert.equal(env.BACKPLANE_HOME, path.join(NodeOS.homedir(), ".backplane", "dev"));
         assert.equal(env.T3CODE_NO_BROWSER, "1");
       }),
     );
@@ -217,6 +219,7 @@ it.layer(NodeServices.layer)("dev-runner", (it) => {
         });
 
         assert.equal(env.T3CODE_HOME, path.resolve("/tmp/custom-t3"));
+        assert.equal(env.BACKPLANE_HOME, path.resolve("/tmp/custom-t3"));
         assert.equal(env.T3CODE_PORT, "4222");
         assert.equal(env.VITE_HTTP_URL, "http://localhost:4222");
         assert.equal(env.VITE_WS_URL, "ws://localhost:4222");
@@ -315,6 +318,7 @@ it.layer(NodeServices.layer)("dev-runner", (it) => {
         });
 
         assert.equal(env.T3CODE_HOME, path.resolve("/tmp/my-t3"));
+        assert.equal(env.BACKPLANE_HOME, path.resolve("/tmp/my-t3"));
       }),
     );
 
@@ -878,11 +882,11 @@ it.layer(NodeServices.layer)("dev-runner", (it) => {
 
     // `tailscale serve` config outlives the process, so a dry run that shared
     // would replace and then tear down whatever mapping the port already had.
-    // Base-dir precedence (--home-dir > worktree .t3 > ambient T3CODE_HOME)
+    // Base-dir precedence (--home-dir > worktree .t3 > ambient BACKPLANE_HOME)
     // lives in runDevRunnerWithInput; the env builder must not consult the
     // ambient variable on its own, or it would silently outrank the worktree
     // default and land dev state on the user's real database.
-    it.effect("ignores an ambient T3CODE_HOME when no home is resolved", () =>
+    it.effect("ignores an ambient T3CODE_HOME when selecting the dev home", () =>
       Effect.gen(function* () {
         const env = yield* createDevRunnerEnv({
           mode: "dev",
@@ -898,7 +902,9 @@ it.layer(NodeServices.layer)("dev-runner", (it) => {
           devUrl: undefined,
         });
 
-        assert.equal(env.T3CODE_HOME, undefined);
+        const path = yield* Path.Path;
+        assert.equal(env.T3CODE_HOME, path.join(NodeOS.homedir(), ".backplane", "dev"));
+        assert.equal(env.BACKPLANE_HOME, path.join(NodeOS.homedir(), ".backplane", "dev"));
       }),
     );
 
@@ -1210,7 +1216,7 @@ it.layer(NodeServices.layer)("dev-runner", (it) => {
       });
     });
 
-    describe("t3 home precedence", () => {
+    describe("Backplane home precedence", () => {
       const makeWorktree = Effect.acquireRelease(
         Effect.sync(() => {
           const root = NodeFS.mkdtempSync(NodePath.join(NodeOS.tmpdir(), "t3-devrunner-"));
@@ -1227,7 +1233,7 @@ it.layer(NodeServices.layer)("dev-runner", (it) => {
         readonly t3Home: string | undefined;
         readonly cwd: string;
         readonly ambientHome: string | undefined;
-        readonly mode?: "dev:server" | "dev:desktop";
+        readonly mode?: "dev" | "dev:server" | "dev:web" | "dev:desktop";
         readonly backplaneHome?: string;
       }) =>
         Effect.gen(function* () {
@@ -1269,7 +1275,8 @@ it.layer(NodeServices.layer)("dev-runner", (it) => {
             cwd: NodeOS.tmpdir(),
             ambientHome: "/home/user/.t3",
           });
-          assert.equal(home, undefined);
+          const path = yield* Path.Path;
+          assert.equal(home, path.join(path.resolve(NodeOS.homedir()), ".backplane", "dev"));
         }),
       );
 
@@ -1328,7 +1335,7 @@ it.layer(NodeServices.layer)("dev-runner", (it) => {
         }).pipe(Effect.scoped),
       );
 
-      it.effect("prefers the worktree .t3 over an ambient T3CODE_HOME", () =>
+      it.effect("prefers the worktree .t3 over an ambient BACKPLANE_HOME", () =>
         Effect.gen(function* () {
           const path = yield* Path.Path;
           const root = yield* makeWorktree;
@@ -1336,31 +1343,50 @@ it.layer(NodeServices.layer)("dev-runner", (it) => {
             t3Home: undefined,
             cwd: root,
             ambientHome: "/home/user/.t3",
+            backplaneHome: "/home/user/.backplane",
           });
           assert.equal(home, path.join(path.resolve(root), ".t3"));
         }).pipe(Effect.scoped),
       );
 
-      it.effect("falls back to an ambient T3CODE_HOME outside a worktree", () =>
+      it.effect("falls back to an ambient BACKPLANE_HOME outside a worktree", () =>
         Effect.gen(function* () {
           const path = yield* Path.Path;
           const home = yield* spawnedHome({
             t3Home: undefined,
             cwd: NodeOS.tmpdir(),
             ambientHome: "/home/user/.t3",
+            backplaneHome: "/home/user/.backplane",
           });
-          assert.equal(home, path.resolve("/home/user/.t3"));
+          assert.equal(home, path.resolve("/home/user/.backplane"));
         }),
       );
 
-      it.effect("leaves the home implicit with no worktree and no ambient value", () =>
+      it.effect("uses the ambient Backplane home for browser and web modes", () =>
+        Effect.gen(function* () {
+          const path = yield* Path.Path;
+          for (const mode of ["dev", "dev:web"] as const) {
+            const home = yield* spawnedHome({
+              mode,
+              t3Home: undefined,
+              cwd: NodeOS.tmpdir(),
+              ambientHome: "/home/user/.t3",
+              backplaneHome: "/home/user/.backplane",
+            });
+            assert.equal(home, path.resolve("/home/user/.backplane"));
+          }
+        }),
+      );
+
+      it.effect("uses the isolated dev home with no worktree or ambient value", () =>
         Effect.gen(function* () {
           const home = yield* spawnedHome({
             t3Home: undefined,
             cwd: NodeOS.tmpdir(),
             ambientHome: undefined,
           });
-          assert.equal(home, undefined);
+          const path = yield* Path.Path;
+          assert.equal(home, path.join(path.resolve(NodeOS.homedir()), ".backplane", "dev"));
         }),
       );
     });

@@ -67,12 +67,8 @@ export function isProxiableBindHost(host: string): boolean {
   );
 }
 
-export const DEFAULT_T3_HOME = Effect.map(Effect.service(Path.Path), (path) =>
-  path.join(NodeOS.homedir(), ".t3"),
-);
-
-const DEFAULT_BACKPLANE_HOME = Effect.map(Effect.service(Path.Path), (path) =>
-  path.join(NodeOS.homedir(), ".backplane"),
+const DEFAULT_DEV_HOME = Effect.map(Effect.service(Path.Path), (path) =>
+  path.join(NodeOS.homedir(), ".backplane", "dev"),
 );
 
 const MODE_ARGS = {
@@ -290,7 +286,7 @@ function resolveBaseDir(baseDir: string | undefined): Effect.Effect<string, neve
       return path.resolve(configured);
     }
 
-    return yield* DEFAULT_T3_HOME;
+    return yield* DEFAULT_DEV_HOME;
   });
 }
 
@@ -308,6 +304,10 @@ interface CreateDevRunnerEnvInput {
   readonly devUrl: URL | undefined;
 }
 
+interface DevRunnerEnv extends NodeJS.ProcessEnv {
+  readonly BACKPLANE_HOME: string;
+}
+
 export function createDevRunnerEnv({
   mode,
   baseEnv,
@@ -320,32 +320,30 @@ export function createDevRunnerEnv({
   host,
   port,
   devUrl,
-}: CreateDevRunnerEnvInput): Effect.Effect<NodeJS.ProcessEnv, never, Path.Path> {
+}: CreateDevRunnerEnvInput): Effect.Effect<DevRunnerEnv, never, Path.Path> {
   return Effect.gen(function* () {
     const serverPort = port ?? BASE_SERVER_PORT + serverOffset;
     const webPort = BASE_WEB_PORT + webOffset;
-    // Precedence (--home-dir > worktree .t3 > the app's home variable) is resolved
+    // Precedence (--home-dir > worktree .t3 > the ambient Backplane home) is resolved
     // by the caller; an unset t3Home here genuinely means "use the default".
     const configuredBaseDir = t3Home?.trim() || undefined;
     const resolvedBaseDir = yield* resolveBaseDir(configuredBaseDir);
     const isDesktopMode = mode === "dev:desktop";
 
-    const output: NodeJS.ProcessEnv = {
+    const output: DevRunnerEnv = {
       ...baseEnv,
+      BACKPLANE_HOME: resolvedBaseDir,
       PORT: String(webPort),
       VITE_DEV_SERVER_URL:
         devUrl?.toString() ??
         `http://${isDesktopMode ? DESKTOP_DEV_LOOPBACK_HOST : "localhost"}:${webPort}`,
     };
 
-    const homeVariable = isDesktopMode ? "BACKPLANE_HOME" : "T3CODE_HOME";
-    if (configuredBaseDir !== undefined) {
-      output[homeVariable] = resolvedBaseDir;
-    } else {
-      delete output[homeVariable];
-    }
+    // The inherited server consumes T3CODE_HOME; never forward its ambient value.
     if (isDesktopMode) {
       delete output.T3CODE_HOME;
+    } else {
+      output.T3CODE_HOME = resolvedBaseDir;
     }
 
     // A dev-runner server is never launcher-managed. When the shell that runs
@@ -684,15 +682,13 @@ export function runDevRunnerWithInput(input: DevRunnerCliInput) {
     const hostEnvironment = yield* HostProcessEnvironment;
     // A dev server started inside a worktree defaults to that worktree's own
     // (gitignored) `.t3` — see @t3tools/shared/devHome for why this must
-    // outrank an ambient T3CODE_HOME. `--home-dir` still wins.
+    // outrank an ambient BACKPLANE_HOME. `--home-dir` still wins.
     const worktreeHome = yield* resolveWorktreeT3Home(yield* HostProcessWorkingDirectory);
     // Trim before choosing: `--home-dir ""` is not a selection, and treating it
     // as one would skip the worktree default and land on the shared home —
     // exactly the outcome this precedence exists to prevent.
-    const ambientHome =
-      input.mode === "dev:desktop" ? hostEnvironment.BACKPLANE_HOME : hostEnvironment.T3CODE_HOME;
     const resolvedT3Home =
-      (input.t3Home?.trim() || undefined) ?? worktreeHome ?? (ambientHome?.trim() || undefined);
+      (input.t3Home?.trim() || undefined) ?? worktreeHome ?? hostEnvironment.BACKPLANE_HOME?.trim();
     const env = yield* createDevRunnerEnv({
       mode: input.mode,
       baseEnv: hostEnvironment,
@@ -711,13 +707,8 @@ export function runDevRunnerWithInput(input: DevRunnerCliInput) {
       serverOffset !== offset || webOffset !== offset
         ? ` selectedOffset(server=${serverOffset},web=${webOffset})`
         : "";
-    const baseDir =
-      input.mode === "dev:desktop"
-        ? (env.BACKPLANE_HOME ?? (yield* DEFAULT_BACKPLANE_HOME))
-        : (env.T3CODE_HOME ?? (yield* DEFAULT_T3_HOME));
-
     yield* Effect.logInfo(
-      `[dev-runner] mode=${input.mode} source=${source}${selectionSuffix} serverPort=${String(env.T3CODE_PORT)} webPort=${String(env.PORT)} baseDir=${baseDir}`,
+      `[dev-runner] mode=${input.mode} source=${source}${selectionSuffix} serverPort=${String(env.T3CODE_PORT)} webPort=${String(env.PORT)} baseDir=${env.BACKPLANE_HOME}`,
     );
 
     // Before the share block: --dry-run only resolves and prints. Sharing would
@@ -871,7 +862,7 @@ const devRunnerCli = Command.make("dev-runner", {
   ),
   t3Home: Flag.string("home-dir").pipe(
     Flag.withDescription(
-      "Explicit data directory; runtime state is stored under userdata (BACKPLANE_HOME for desktop, T3CODE_HOME for server/web). Inside a git worktree this defaults to that worktree's own .t3 so dev state stays off the shared home.",
+      "Explicit data directory; runtime state is stored under userdata. Defaults to the linked worktree's .t3, then BACKPLANE_HOME, then ~/.backplane/dev. Ambient T3CODE_HOME is ignored.",
     ),
     Flag.optional,
     Flag.map(Option.getOrUndefined),
